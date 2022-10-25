@@ -20,15 +20,20 @@ namespace ChessGame
         public Grid? grid; // corresponding grid item in MainWindow
         public ChessPiece?[,] currentSituation;
         public ChessPiece? holdChess;
-        public Stack<string> history = new Stack<string>();
+        public List<string> standardHistory = new List<string>();
+        public List<int[]> history = new List<int[]>();
 
         public ChessBoard(Grid _grid) {
             this.grid = _grid;
-            InitializeCurrentSituation();
+
+            this.currentSituation = new ChessPiece[8, 8];
+            Add(7, 4, new King(true));
+            //currentSituation[7, 4].image.IsEnabled = false;
+            //InitializeCurrentSituation();
         }
 
         private void InitializeCurrentSituation() {
-            this.currentSituation = new ChessPiece[8, 8];
+            ChessPiece.Size = grid.Width / 8;
 
             bool isWhite = true;
             Add(7, 0, new Rook(isWhite));
@@ -57,30 +62,32 @@ namespace ChessGame
         }
 
         public void PickUp(Grid air, Point mousePosition) { // Take the chess piece from the board into the air
-            Image img = holdChess.image;
+            //Image img = holdChess.image;
 
-            // Remove from board
-            grid.Children.Remove(img);
+            //// Remove from board
+            //grid.Children.Remove(img);
 
-            // Add to air
-            double x = mousePosition.X - ChessPiece.Size / 2;
-            double y = mousePosition.Y - ChessPiece.Size / 2;
-            air.Children.Add(img);
-            img.Margin = new Thickness(x, y, 0, 0);
-            Grid.SetRow(img, 0);
-            Grid.SetColumn(img, 0);
+            //// Add to air
+            //double x = mousePosition.X - ChessPiece.Size / 2;
+            //double y = mousePosition.Y - ChessPiece.Size / 2;
+            //air.Children.Add(img);
+            //img.Margin = new Thickness(x, y, 0, 0);
+            //Grid.SetRow(img, 0);
+            //Grid.SetColumn(img, 0);
         }
+
         public void PutDown(Grid air, Point mousePosition) {
             // Remove from air
             air.Children.Remove(holdChess.image);
 
             // Add to board
-            int row = (int)(mousePosition.Y / ChessPiece.Size);
-            int col = (int)(mousePosition.X / ChessPiece.Size);
-            Add(row, col, holdChess);
+            (int row, int col) = GetPosition(mousePosition);
+            this.Add(row, col, holdChess);
             holdChess = null;
         }
-        public void Add(int row, int col, ChessPiece chess) { // Add to board
+
+        // Add to board
+        public void Add(int row, int col, ChessPiece chess) { 
             Image img = chess.image;
             img.Margin = new Thickness(0, 0, 0, 0);
             grid.Children.Add(img);
@@ -88,9 +95,22 @@ namespace ChessGame
             Grid.SetColumn(img, col);
             this.currentSituation[row, col] = chess;
         }
+
         public bool isOutOfBound(Point pos) {
-            int d = 10; // redundant
+            int d = 0; // redundant
             return pos.X <= d || pos.X >= grid.Width - d || pos.Y <= d || pos.Y >= grid.Height - d;
+        }
+
+        /// <summary>
+        /// Get the position of the mouse cursor on the chessboard coordinates
+        /// </summary>
+        /// <param name="mousePosition"> Relative to the top left corner of board </param>
+        /// <returns> Coordinate of board. output = (row index, column index) </returns>
+        public (int, int) GetPosition(Point mousePosition) {
+            return (
+                (int)(mousePosition.Y / ChessPiece.Size), // Row index
+                (int)(mousePosition.X / ChessPiece.Size) // Column index
+            ); 
         }
     }
 }

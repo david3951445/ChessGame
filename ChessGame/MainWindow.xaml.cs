@@ -49,28 +49,48 @@ namespace ChessGame
             chess.image.MouseMove += Image_MouseMove;
             chess.image.MouseLeftButtonUp += Image_MouseLeftButtonUp;
         }
+        private void PutDown(int row, int col) {
+            UI.Children.Remove(board.holdChess.image); // Remove from air  
+            board.Add(row, col, board.holdChess); // Add to board
+            board.holdChess = null;
+        }
         private void Image_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e) {
-            if (board.holdChess == null) {
-                Trace.WriteLine("Image_MouseLeftButtonDown");
+            Trace.WriteLine("Image_MouseLeftButtonDown");
 
-                // Hold the picked chess and remove it from current situation of board. 
-                Image img = sender as Image;
-                int row = Grid.GetRow(img);
-                int col = Grid.GetColumn(img);
-                board.holdChess = board.currentSituation[row, col];
+            Point mousePosition = e.GetPosition(UI);
+            (int row, int col) = board.GetPosition(mousePosition);
+            ChessPiece? chess = board.currentSituation[row, col];
+            if (chess != null) { // Mouse hit the chess
+
+                // Hold the picked chess
+                board.holdChess = chess;
                 board.currentSituation[row, col] = null;
 
-                // Pick the chess up.
-                preMousePosition = e.GetPosition(UI);
-                board.PickUp(UI, preMousePosition);
+                // Remove from board
+                Image img = chess.image;
+                gridBoard.Children.Remove(img);
+
+                // Add to air
+                double x = mousePosition.X - ChessPiece.Size / 2;
+                double y = mousePosition.Y - ChessPiece.Size / 2;
+                UI.Children.Add(img);
+                img.Margin = new Thickness(x, y, 0, 0);
+                Grid.SetRow(img, 0);
+                Grid.SetColumn(img, 0);
+
+                preMousePosition = mousePosition;
+            }
+            else {
+                // Cancel some effect
             }
         }
         private void Image_MouseMove(object sender, System.Windows.Input.MouseEventArgs e) {
-            if (board.holdChess != null) {
-                Trace.WriteLine("Image_MouseMove");
+            Point mousePosition = e.GetPosition(UI);
+            (int row, int col) = board.GetPosition(mousePosition);
+
+            if (board.holdChess != null) { // Holding a chess
 
                 // Let chess follow the mouse
-                Point mousePosition = e.GetPosition(UI);
                 double x = mousePosition.X - ChessPiece.Size / 2;
                 double y = mousePosition.Y - ChessPiece.Size / 2;
                 board.holdChess.image.Margin = new Thickness(x, y, 0, 0);
@@ -79,18 +99,22 @@ namespace ChessGame
                 if (board.isOutOfBound(mousePosition)) {
                     Trace.WriteLine("Out of bound");
 
-                    //Trace.WriteLine(preMousePosition.ToString()); 
                     board.PutDown(UI, preMousePosition); // Put back to the previous position
                 }
             }
         }
 
         private void Image_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
-            Point mousePosition = e.GetPosition(UI);
-            if (!board.isOutOfBound(mousePosition)) {
-                Trace.WriteLine("Image_MouseLeftButtonUp");
+            Trace.WriteLine("Image_MouseLeftButtonUp");
 
+            (int row, int col) = board.GetPosition(e.GetPosition(UI));
+            Point mousePosition = e.GetPosition(UI);
+
+            if (board.holdChess != null) {
                 if (board.holdChess.Rule()) {
+                    // Record the move
+                    board.history.Add(new int[] { row, col });
+                    historyTextBox.Text += $"({row}, {col})";
                     board.PutDown(UI, mousePosition);
                 }
                 else {
@@ -101,15 +125,12 @@ namespace ChessGame
         }
 
         private void ImageBoard_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
-            //mousePosition = e.GetPosition(UI);
-            //textBlock.Text = mousePosition.ToString();
+            Trace.WriteLine("ImageBoard_MouseLeftButtonDown");
+
         }
 
         private void imageBoard_MouseMove(object sender, MouseEventArgs e) {
-            if (e.LeftButton == MouseButtonState.Pressed) {
-                //mousePosition = e.GetPosition(UI);
-                //textBlock.Text = mousePosition.ToString();
-            }
+            Image_MouseMove(sender, e);
         }
     }
 }

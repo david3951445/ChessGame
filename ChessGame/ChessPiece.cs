@@ -23,7 +23,7 @@ namespace ChessGame
     //}
     abstract class ChessPiece
     {
-        public static int Size = 100; // image size
+        public static double Size = 100; // image size
         public bool isWhite;
         public Image image;
 
