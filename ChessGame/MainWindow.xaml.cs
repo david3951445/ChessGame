@@ -30,8 +30,6 @@ namespace ChessGame
             InitializeBoard();
         }
 
-        private Point preMousePosition;
-
         private void InitializeBoard() {
             // Add tip icon
             Image[,] tipIcon = new Image[8, 8];
@@ -49,22 +47,26 @@ namespace ChessGame
             chess.image.MouseMove += Image_MouseMove;
             chess.image.MouseLeftButtonUp += Image_MouseLeftButtonUp;
         }
-        private void PutDown(int row, int col) {
+        private void PutDown(Coords c) {
             UI.Children.Remove(board.holdChess.image); // Remove from air  
-            board.Add(row, col, board.holdChess); // Add to board
+            board.Add(c, board.holdChess); // Add to board
             board.holdChess = null;
         }
+
+        // Event handler
+
         private void Image_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e) {
             Trace.WriteLine("Image_MouseLeftButtonDown");
 
             Point mousePosition = e.GetPosition(UI);
-            (int row, int col) = board.GetPosition(mousePosition);
-            ChessPiece? chess = board.currentSituation[row, col];
+            Coords c = board.GetPosition(mousePosition);
+            ChessPiece? chess = board.currentSituation[c.row, c.col];
+
             if (chess != null) { // Mouse hit the chess
 
                 // Hold the picked chess
                 board.holdChess = chess;
-                board.currentSituation[row, col] = null;
+                board.currentSituation[c.row, c.col] = null;
 
                 // Remove from board
                 Image img = chess.image;
@@ -78,7 +80,6 @@ namespace ChessGame
                 Grid.SetRow(img, 0);
                 Grid.SetColumn(img, 0);
 
-                preMousePosition = mousePosition;
             }
             else {
                 // Cancel some effect
@@ -86,7 +87,7 @@ namespace ChessGame
         }
         private void Image_MouseMove(object sender, System.Windows.Input.MouseEventArgs e) {
             Point mousePosition = e.GetPosition(UI);
-            (int row, int col) = board.GetPosition(mousePosition);
+            Coords c = board.GetPosition(mousePosition);
 
             if (board.holdChess != null) { // Holding a chess
 
@@ -98,29 +99,24 @@ namespace ChessGame
                 // If mouse out off bound
                 if (board.isOutOfBound(mousePosition)) {
                     Trace.WriteLine("Out of bound");
-
-                    board.PutDown(UI, preMousePosition); // Put back to the previous position
+                    PutDown(board.history[board.history.Count - 1]); // Put back to the previous position
                 }
             }
         }
 
         private void Image_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
-            Trace.WriteLine("Image_MouseLeftButtonUp");
-
-            (int row, int col) = board.GetPosition(e.GetPosition(UI));
             Point mousePosition = e.GetPosition(UI);
-
-            if (board.holdChess != null) {
-                if (board.holdChess.Rule()) {
-                    // Record the move
-                    board.history.Add(new int[] { row, col });
-                    historyTextBox.Text += $"({row}, {col})";
-                    board.PutDown(UI, mousePosition);
+            Coords c = board.GetPosition(mousePosition);
+            
+            if (board.holdChess != null) { // Holding the chess
+                if (board.holdChess.Rule()) { // Conform game rules
+                    board.history.Add(c); // Record the move
+                    historyTextBox.Text += c.ToString(); // Show it on UI
+                    PutDown(c); // Put back to board
                 }
                 else {
-                    board.PutDown(UI, preMousePosition);
+                    PutDown(board.history[board.history.Count - 1]); // Put back to the previous position
                 }
-                preMousePosition = mousePosition;
             }
         }
 

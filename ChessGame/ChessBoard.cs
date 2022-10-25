@@ -21,13 +21,12 @@ namespace ChessGame
         public ChessPiece?[,] currentSituation;
         public ChessPiece? holdChess;
         public List<string> standardHistory = new List<string>();
-        public List<int[]> history = new List<int[]>();
+        public List<Coords> history = new List<Coords>();
 
         public ChessBoard(Grid _grid) {
             this.grid = _grid;
-
             this.currentSituation = new ChessPiece[8, 8];
-            Add(7, 4, new King(true));
+            Add(new Coords(7, 4), new King(true));
             //currentSituation[7, 4].image.IsEnabled = false;
             //InitializeCurrentSituation();
         }
@@ -36,28 +35,28 @@ namespace ChessGame
             ChessPiece.Size = grid.Width / 8;
 
             bool isWhite = true;
-            Add(7, 0, new Rook(isWhite));
-            Add(7, 1, new Knight(isWhite));
-            Add(7, 2, new Bishop(isWhite));
-            Add(7, 3, new Queen(isWhite));
-            Add(7, 4, new King(isWhite));
-            Add(7, 5, new Bishop(isWhite));
-            Add(7, 6, new Knight(isWhite));
-            Add(7, 7, new Rook(isWhite));
+            Add(new Coords(7, 0), new Rook(isWhite));
+            Add(new Coords(7, 1), new Knight(isWhite));
+            Add(new Coords(7, 2), new Bishop(isWhite));
+            Add(new Coords(7, 3), new Queen(isWhite));
+            Add(new Coords(7, 4), new King(isWhite));
+            Add(new Coords(7, 5), new Bishop(isWhite));
+            Add(new Coords(7, 6), new Knight(isWhite));
+            Add(new Coords(7, 7), new Rook(isWhite));
             for (int j = 0; j < 8; j++) {
-                Add(6, j, new Pawn(isWhite));
+                Add(new Coords(6, j), new Pawn(isWhite));
             }
             isWhite = false;
-            Add(0, 0, new Rook(isWhite));
-            Add(0, 1, new Knight(isWhite));
-            Add(0, 2, new Bishop(isWhite));
-            Add(0, 3, new Queen(isWhite));
-            Add(0, 4, new King(isWhite));
-            Add(0, 5, new Bishop(isWhite));
-            Add(0, 6, new Knight(isWhite));
-            Add(0, 7, new Rook(isWhite));
+            Add(new Coords(0, 0), new Rook(isWhite));
+            Add(new Coords(0, 1), new Knight(isWhite));
+            Add(new Coords(0, 2), new Bishop(isWhite));
+            Add(new Coords(0, 3), new Queen(isWhite));
+            Add(new Coords(0, 4), new King(isWhite));
+            Add(new Coords(0, 5), new Bishop(isWhite));
+            Add(new Coords(0, 6), new Knight(isWhite));
+            Add(new Coords(0, 7), new Rook(isWhite));
             for (int j = 0; j < 8; j++) {
-                Add(1, j, new Pawn(isWhite));
+                Add(new Coords(1, j), new Pawn(isWhite));
             }
         }
 
@@ -76,24 +75,14 @@ namespace ChessGame
             //Grid.SetColumn(img, 0);
         }
 
-        public void PutDown(Grid air, Point mousePosition) {
-            // Remove from air
-            air.Children.Remove(holdChess.image);
-
-            // Add to board
-            (int row, int col) = GetPosition(mousePosition);
-            this.Add(row, col, holdChess);
-            holdChess = null;
-        }
-
         // Add to board
-        public void Add(int row, int col, ChessPiece chess) { 
+        public void Add(Coords c, ChessPiece chess) { 
             Image img = chess.image;
             img.Margin = new Thickness(0, 0, 0, 0);
             grid.Children.Add(img);
-            Grid.SetRow(img, row);
-            Grid.SetColumn(img, col);
-            this.currentSituation[row, col] = chess;
+            Grid.SetRow(img, c.row);
+            Grid.SetColumn(img, c.col);
+            this.currentSituation[c.row, c.col] = chess;
         }
 
         public bool isOutOfBound(Point pos) {
@@ -106,8 +95,8 @@ namespace ChessGame
         /// </summary>
         /// <param name="mousePosition"> Relative to the top left corner of board </param>
         /// <returns> Coordinate of board. output = (row index, column index) </returns>
-        public (int, int) GetPosition(Point mousePosition) {
-            return (
+        public Coords GetPosition(Point mousePosition) {
+            return new Coords (
                 (int)(mousePosition.Y / ChessPiece.Size), // Row index
                 (int)(mousePosition.X / ChessPiece.Size) // Column index
             ); 
