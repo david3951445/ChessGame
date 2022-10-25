@@ -42,6 +42,7 @@
             <!--<Image x:Name="imageBr" Grid.Row="0" Grid.Column="0" Source="img/br.png"/>-->
         </Grid>
         <Image x:Name="debugImage" Grid.Column="1" HorizontalAlignment="Left" Height="100" Margin="34,85,0,0" VerticalAlignment="Top" Width="100"/>
+        <TextBlock x:Name="textBlock" Grid.Column="1" HorizontalAlignment="Center" Margin="0,615,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>
 
         <!--some button-->
     </Grid>

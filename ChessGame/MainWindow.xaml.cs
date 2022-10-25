@@ -27,21 +27,22 @@ namespace ChessGame
         ChessBoard board;
         public MainWindow() {
             InitializeComponent();
-            board = new ChessBoard() {
-                grid = gridBoard
-            };
             InitializeBoard();
         }
 
         private Point preMousePosition;
 
         private void InitializeBoard() {
-            // add chess pieces to board
-            ChessPiece[] chessType = new ChessPiece[12];
-            //chessType[0] = new Bishop();
-            King king = new King() { isWhite = false };
-            AddEventToChess(king);
-            board.Add(1, 1, king);
+            // Add tip icon
+            Image[,] tipIcon = new Image[8, 8];
+
+            // Add chess pieces to board
+            this.board = new ChessBoard(gridBoard);
+            foreach (var item in board.currentSituation) {
+                if (item != null) {
+                    AddEventToChess(item);
+                }
+            }
         }
         private void AddEventToChess(ChessPiece chess) {
             chess.image.MouseLeftButtonDown += Image_MouseLeftButtonDown;

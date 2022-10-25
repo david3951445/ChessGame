@@ -9,6 +9,8 @@ using System.Windows.Media.Imaging;
 using System.Windows;
 using System.Windows.Input;
 using System.Net.NetworkInformation;
+using System.Diagnostics;
+using System.ComponentModel;
 
 namespace ChessGame
 {
@@ -21,7 +23,12 @@ namespace ChessGame
     //}
     abstract class ChessPiece
     {
-        public ChessPiece() {
+        public static int Size = 100; // image size
+        public bool isWhite;
+        public Image image;
+
+        public ChessPiece(bool _isWhite) {
+            isWhite = _isWhite;
             image = new Image() {
                 //Stretch = Stretch.Fill,
                 Width = Size,
@@ -30,19 +37,10 @@ namespace ChessGame
                 VerticalAlignment = VerticalAlignment.Top,
             };
             image.MouseRightButtonDown += Image_MouseRightButtonDown;
-            isWhite = true;
         }
 
         private void Image_MouseRightButtonDown(object sender, MouseButtonEventArgs e) {
-            throw new NotImplementedException();
-        }
-
-        public static int Size = 100; // image size
-        public Image image;
-        public bool isWhite;
-
-        public void Move() {
-
+            //throw new NotImplementedException();
         }
         protected void SetImageSource(string fileName) {
             BitmapImage bitmap = new BitmapImage();
@@ -51,20 +49,89 @@ namespace ChessGame
             bitmap.EndInit();
             this.image.Source = bitmap;
         }
-        abstract public bool Rule();
+
+        abstract public bool Rule(); // Chess move rule
     }
     class King : ChessPiece
     {
-        public King() {
-            string fileName = "img/bk.png"; // Black King
+        public King(bool _isWhite) : base (_isWhite) {
             if (isWhite) {
-                fileName = "img/wk.png"; // White King
+                SetImageSource("img/wk.png"); // White King
             }
-            this.SetImageSource(fileName);
+            else {
+                SetImageSource("img/bk.png"); // Black King
+            }
         }
-
-        //public int X { get; set; }
-
+        public override bool Rule() {
+            return true;
+        }
+    }
+    class Queen : ChessPiece
+    {
+        public Queen(bool _isWhite) : base(_isWhite) {
+            if (isWhite) {
+                SetImageSource("img/wq.png"); // White King
+            }
+            else {
+                SetImageSource("img/bq.png"); // Black King
+            }
+        }
+        public override bool Rule() {
+            return true;
+        }
+    }
+    class Rook : ChessPiece
+    {
+        public Rook(bool _isWhite) : base(_isWhite) {
+            if (isWhite) {
+                SetImageSource("img/wr.png"); // White King
+            }
+            else {
+                SetImageSource("img/br.png"); // Black King
+            }
+        }
+        public override bool Rule(){
+            return true;
+        }
+    }
+    class Bishop : ChessPiece
+    {
+        public Bishop(bool _isWhite) : base(_isWhite) {
+            if (isWhite) {
+                SetImageSource("img/wb.png"); // White King
+            }
+            else {
+                SetImageSource("img/bb.png"); // Black King
+            }
+        }
+        public override bool Rule() {
+            return true;
+        }
+    }
+    class Knight : ChessPiece
+    {
+        public Knight(bool _isWhite) : base(_isWhite) {
+            if (isWhite) {
+                SetImageSource("img/wn.png"); // White King
+            }
+            else {
+                SetImageSource("img/bn.png"); // Black King
+            }
+        }
+        public override bool Rule() {
+            return true;
+        }
+    }
+    class Pawn : ChessPiece
+    {
+        public Pawn(bool _isWhite) : base(_isWhite) {
+            if (isWhite) {
+                SetImageSource("img/wp.png"); // White King
+            }
+            else {
+                SetImageSource("img/bp.png"); // Black King
+            }
+        }
         public override bool Rule() {
             return true;
         }
