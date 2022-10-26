@@ -72,21 +72,21 @@ namespace ChessGame
             Add(new Coords(7, 5), new Bishop(isWhite));
             Add(new Coords(7, 6), new Knight(isWhite));
             Add(new Coords(7, 7), new Rook(isWhite));
-            //for (int j = 0; j < 8; j++) {
-            //    Add(new Coords(6, j), new Pawn(isWhite));
-            //}
-            //isWhite = false;
-            //Add(new Coords(0, 0), new Rook(isWhite));
-            //Add(new Coords(0, 1), new Knight(isWhite));
-            //Add(new Coords(0, 2), new Bishop(isWhite));
-            //Add(new Coords(0, 3), new Queen(isWhite));
-            //Add(new Coords(0, 4), new King(isWhite));
-            //Add(new Coords(0, 5), new Bishop(isWhite));
-            //Add(new Coords(0, 6), new Knight(isWhite));
-            //Add(new Coords(0, 7), new Rook(isWhite));
-            //for (int j = 0; j < 8; j++) {
-            //    Add(new Coords(1, j), new Pawn(isWhite));
-            //}
+            for (int j = 0; j < 8; j++) {
+                Add(new Coords(6, j), new Pawn(isWhite));
+            }
+            isWhite = false;
+            Add(new Coords(0, 0), new Rook(isWhite));
+            Add(new Coords(0, 1), new Knight(isWhite));
+            Add(new Coords(0, 2), new Bishop(isWhite));
+            Add(new Coords(0, 3), new Queen(isWhite));
+            Add(new Coords(0, 4), new King(isWhite));
+            Add(new Coords(0, 5), new Bishop(isWhite));
+            Add(new Coords(0, 6), new Knight(isWhite));
+            Add(new Coords(0, 7), new Rook(isWhite));
+            for (int j = 0; j < 8; j++) {
+                Add(new Coords(1, j), new Pawn(isWhite));
+            }
         }
 
         public void PickUp(Grid air, Point mousePosition) { // Take the chess piece from the board into the air

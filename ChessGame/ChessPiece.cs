@@ -12,6 +12,8 @@ using System.Net.NetworkInformation;
 using System.Diagnostics;
 using System.ComponentModel;
 using System.Runtime.ExceptionServices;
+using System.Xml.Linq;
+using System.Drawing;
 
 namespace ChessGame
 {
@@ -24,7 +26,7 @@ namespace ChessGame
     //}
     internal abstract class ChessPiece
     {
-        public ChessPiece(bool _isWhite) {
+        public ChessPiece(bool _isWhite, string _name) {
             isWhite = _isWhite;
             image = new Image() {
                 //Stretch = Stretch.Fill,
@@ -33,15 +35,17 @@ namespace ChessGame
                 HorizontalAlignment = HorizontalAlignment.Left,
                 VerticalAlignment = VerticalAlignment.Top,
             };
+            name = _name;
+            SetImageSource();
         }
 
         public static double Size = 100; // image size
-        public bool isWhite;
+        public bool isWhite; // Whit or black
         public Image image; // Image of chess
         public string? name; // Abbreviation name
         protected Coords[] dirs; // Directions of move
 
-        protected void SetImageSource() {
+        private void SetImageSource() {
             string fileName;
             if (isWhite) {
                 fileName = $"img/w{name}.png"; // White
@@ -64,10 +68,7 @@ namespace ChessGame
 
     class King : ChessPiece
     {
-        public King(bool _isWhite) : base (_isWhite) {
-            name = "K";
-            SetImageSource();
-
+        public King(bool _isWhite) : base (_isWhite, "K") {
             // King's 8 move
             dirs = new Coords[8];
             dirs[0] = new Coords(0, 1);
@@ -87,10 +88,7 @@ namespace ChessGame
 
     class Queen : ChessPiece
     {
-        public Queen(bool _isWhite) : base(_isWhite) {
-            name = "Q";
-            SetImageSource();
-
+        public Queen(bool _isWhite) : base(_isWhite, "Q") {
             // Qing's 8 direction
             dirs = new Coords[8];
             dirs[0] = new Coords(0, 1);
@@ -100,6 +98,7 @@ namespace ChessGame
                 dirs[i + 5] = dirs[i + 4].GetRotate90();
             }
         }
+
         public override void Rule(ChessBoard board) {
             foreach (var bias in dirs) {
                 Coords coord = board.currentCoord + bias;
@@ -112,10 +111,7 @@ namespace ChessGame
 
     class Rook : ChessPiece
     {
-        public Rook(bool _isWhite) : base(_isWhite) {
-            name = "R";
-            SetImageSource();
-
+        public Rook(bool _isWhite) : base(_isWhite, "R") {
             dirs = new Coords[4];
             dirs[0] = new Coords(0, 1);
             for (int i = 0; i < 3; i++) {
@@ -135,10 +131,7 @@ namespace ChessGame
 
     class Bishop : ChessPiece
     {
-        public Bishop(bool _isWhite) : base(_isWhite) {
-            name = "B";
-            SetImageSource();
-
+        public Bishop(bool _isWhite) : base(_isWhite, "B") {
             dirs = new Coords[4];
             dirs[0] = new Coords(1, 1);
             for (int i = 0; i < 3; i++) {
@@ -157,10 +150,7 @@ namespace ChessGame
 
     class Knight : ChessPiece
     {
-        public Knight(bool _isWhite) : base(_isWhite) {
-            name = "N";
-            SetImageSource();
-
+        public Knight(bool _isWhite) : base(_isWhite, "N") {
             // Knight's 8 move
             dirs = new Coords[8];
             dirs[0] = new Coords(1, 2);
@@ -179,13 +169,52 @@ namespace ChessGame
             }
         }
     }
+
     class Pawn : ChessPiece
     {
-        public Pawn(bool _isWhite) : base(_isWhite) {
-            name = "";
-            SetImageSource();
+        public Pawn(bool _isWhite) : base(_isWhite, "P") {
+            dirs = new Coords[4];
+            dirs[0] = new Coords(-1, 0);
+            dirs[1] = new Coords(-1, -1);
+            dirs[2] = new Coords(-1, 1);
+            dirs[3] = new Coords(-2, 0);
+            if (!isWhite) { // Black pawn move down
+                dirs[0].row = dirs[1].row = dirs[2].row = 1;
+                dirs[3].row = 2;
+            }
         }
+
         public override void Rule(ChessBoard board) {
+            Coords coord = board.currentCoord;
+            ChessPiece? targetChess;
+
+            // Forward
+            coord += dirs[0];
+            targetChess = board.currentSituation[coord.row, coord.col];
+            if (targetChess == null) { // No Chess there
+                board.tipIcon[coord.row, coord.col].Visibility = Visibility.Visible;
+            }
+
+            // Forward, first move
+            bool isFirstMove = board.currentCoord.row == 1 && !isWhite || board.currentCoord.row == 6 && isWhite;
+            if (isFirstMove) {
+                coord += dirs[0];
+                targetChess = board.currentSituation[coord.row, coord.col];
+                if (targetChess == null) { // No Chess there
+                    board.tipIcon[coord.row, coord.col].Visibility = Visibility.Visible;
+                }
+            }
+
+            // Both sides
+            for (int i = 1; i < 3; i++) {
+                coord = board.currentCoord + dirs[i];
+                targetChess = board.currentSituation[coord.row, coord.col];
+                if (targetChess != null && !IsSameColor(targetChess)) { // Is Chess there && Different color chess there
+                    board.tipIcon[coord.row, coord.col].Visibility = Visibility.Visible;
+                    board.tipIcon[coord.row, coord.col].Background = Brushes.Red;
+                }
+            }
+
         }
     }
 }
