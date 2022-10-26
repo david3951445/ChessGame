@@ -16,7 +16,7 @@
         </Grid.RowDefinitions>
 
         <!--Board-->
-        <Image x:Name="imageBoard" Grid.Row="0" Grid.Column="0" Source="img/board.png" Grid.ColumnSpan="1" MouseLeftButtonDown="ImageBoard_MouseLeftButtonDown" MouseMove="imageBoard_MouseMove"/>
+        <Image x:Name="imageBoard" Grid.Row="0" Grid.Column="0" Source="img/board.png" Grid.ColumnSpan="1" MouseLeftButtonDown="ImageBoard_MouseLeftButtonDown" MouseMove="imageBoard_MouseMove" Panel.ZIndex="-2"/>
         <Grid x:Name="gridBoard" Grid.Row="0" Grid.Column="0" Width="800" Height="800">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
@@ -39,26 +39,30 @@
                 <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
             <!--<Image x:Name="imageBr" Grid.Row="0" Grid.Column="0" Source="img/br.png"/>-->
-            <Label Grid.Row="0" Content="8" Foreground="#FF769656" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" FontSize="18" FontWeight="Bold" Height="30" Width="25"/>
-            <Label Grid.Row="1" Content="7" Foreground="#FFEEEED2" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" FontSize="18" FontWeight="Bold" Height="30" Width="25"/>
-            <Label Grid.Row="2" Content="6" Foreground="#FF769656" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" FontSize="18" FontWeight="Bold" Height="30" Width="25"/>
-            <Label Grid.Row="3" Content="5" Foreground="#FFEEEED2" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" FontSize="18" FontWeight="Bold" Height="30" Width="25"/>
-            <Label Grid.Row="4" Content="4" Foreground="#FF769656" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" FontSize="18" FontWeight="Bold" Height="30" Width="25"/>
-            <Label Grid.Row="5" Content="3" Foreground="#FFEEEED2" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" FontSize="18" FontWeight="Bold" Height="30" Width="25"/>
-            <Label Grid.Row="6" Content="2" Foreground="#FF769656" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" FontSize="18" FontWeight="Bold" Height="30" Width="25"/>
-            <Label Grid.Row="7" Content="1" Foreground="#FFEEEED2" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" FontSize="18" FontWeight="Bold" Height="30" Width="25"/>
-            <Label Grid.Row="7" Grid.Column="0" Content="a" Foreground="#FFEEEED2" HorizontalAlignment="Right" Margin="0,0,0,0" VerticalAlignment="Bottom" FontSize="18" FontWeight="Bold" Height="30" Width="25"/>
-            <Label Grid.Row="7" Grid.Column="1" Content="b" Foreground="#FF769656" HorizontalAlignment="Right" Margin="0,0,0,0" VerticalAlignment="Bottom" FontSize="18" FontWeight="Bold" Height="30" Width="25"/>
-            <Label Grid.Row="7" Grid.Column="2" Content="c" Foreground="#FFEEEED2" HorizontalAlignment="Right" Margin="0,0,0,0" VerticalAlignment="Bottom" FontSize="18" FontWeight="Bold" Height="30" Width="25"/>
-            <Label Grid.Row="7" Grid.Column="3" Content="d" Foreground="#FF769656" HorizontalAlignment="Right" Margin="0,0,0,0" VerticalAlignment="Bottom" FontSize="18" FontWeight="Bold" Height="30" Width="25"/>
-            <Label Grid.Row="7" Grid.Column="4" Content="e" Foreground="#FFEEEED2" HorizontalAlignment="Right" Margin="0,0,0,0" VerticalAlignment="Bottom" FontSize="18" FontWeight="Bold" Height="30" Width="25"/>
-            <Label Grid.Row="7" Grid.Column="5" Content="f" Foreground="#FF769656" HorizontalAlignment="Right" Margin="0,0,0,0" VerticalAlignment="Bottom" FontSize="18" FontWeight="Bold" Height="30" Width="25"/>
-            <Label Grid.Row="7" Grid.Column="6" Content="g" Foreground="#FFEEEED2" HorizontalAlignment="Right" Margin="0,0,0,0" VerticalAlignment="Bottom" FontSize="18" FontWeight="Bold" Height="33" Width="25"/>
-            <Label Grid.Row="7" Grid.Column="7" Content="h" Foreground="#FF769656" HorizontalAlignment="Right" Margin="0,0,0,0" VerticalAlignment="Bottom" FontSize="18" FontWeight="Bold" Height="30" Width="25"/>
+            <TextBlock Grid.Row="0" Text="8" Foreground="#FF769656" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" FontSize="18" FontWeight="Bold" Height="25" Width="25"/>
+            <TextBlock Grid.Row="1" Text="7" Foreground="#FFEEEED2" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" FontSize="18" FontWeight="Bold" Height="25" Width="25"/>
+            <TextBlock Grid.Row="2" Text="6" Foreground="#FF769656" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" FontSize="18" FontWeight="Bold" Height="25" Width="25"/>
+            <TextBlock Grid.Row="3" Text="5" Foreground="#FFEEEED2" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" FontSize="18" FontWeight="Bold" Height="25" Width="25"/>
+            <TextBlock Grid.Row="4" Text="4" Foreground="#FF769656" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" FontSize="18" FontWeight="Bold" Height="25" Width="25"/>
+            <TextBlock Grid.Row="5" Text="3" Foreground="#FFEEEED2" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" FontSize="18" FontWeight="Bold" Height="25" Width="25"/>
+            <TextBlock Grid.Row="6" Text="2" Foreground="#FF769656" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" FontSize="18" FontWeight="Bold" Height="25" Width="25"/>
+            <TextBlock Grid.Row="7" Text="1" Foreground="#FFEEEED2" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" FontSize="18" FontWeight="Bold" Height="25" Width="25"/>
+            <TextBlock Grid.Row="7" Grid.Column="0" Text="a" Foreground="#FFEEEED2" HorizontalAlignment="Right" Margin="0,0,0,0" VerticalAlignment="Bottom" FontSize="18" FontWeight="Bold" Height="25" Width="25"/>
+            <TextBlock Grid.Row="7" Grid.Column="1" Text="b" Foreground="#FF769656" HorizontalAlignment="Right" Margin="0,0,0,0" VerticalAlignment="Bottom" FontSize="18" FontWeight="Bold" Height="25" Width="25"/>
+            <TextBlock Grid.Row="7" Grid.Column="2" Text="c" Foreground="#FFEEEED2" HorizontalAlignment="Right" Margin="0,0,0,0" VerticalAlignment="Bottom" FontSize="18" FontWeight="Bold" Height="25" Width="25"/>
+            <TextBlock Grid.Row="7" Grid.Column="3" Text="d" Foreground="#FF769656" HorizontalAlignment="Right" Margin="0,0,0,0" VerticalAlignment="Bottom" FontSize="18" FontWeight="Bold" Height="25" Width="25"/>
+            <TextBlock Grid.Row="7" Grid.Column="4" Text="e" Foreground="#FFEEEED2" HorizontalAlignment="Right" Margin="0,0,0,0" VerticalAlignment="Bottom" FontSize="18" FontWeight="Bold" Height="25" Width="25"/>
+            <TextBlock Grid.Row="7" Grid.Column="5" Text="f" Foreground="#FF769656" HorizontalAlignment="Right" Margin="0,0,0,0" VerticalAlignment="Bottom" FontSize="18" FontWeight="Bold" Height="25" Width="25"/>
+            <TextBlock Grid.Row="7" Grid.Column="6" Text="g" Foreground="#FFEEEED2" HorizontalAlignment="Right" Margin="0,0,0,0" VerticalAlignment="Bottom" FontSize="18" FontWeight="Bold" Height="25" Width="25"/>
+            <TextBlock Grid.Row="7" Grid.Column="7" Text="h" Foreground="#FF769656" HorizontalAlignment="Right" Margin="0,0,0,0" VerticalAlignment="Bottom" FontSize="18" FontWeight="Bold" Height="25" Width="25"/>
         </Grid>
-        <Image x:Name="debugImage" Grid.Column="1" HorizontalAlignment="Left" Height="100" Margin="34,85,0,0" VerticalAlignment="Top" Width="100"/>
-        <TextBlock x:Name="historyTextBox" Grid.Column="1" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top" Height="180" Width="180" Margin="0,43,0,0"/>
 
-        <!--some button-->
+        <!--buttons-->
+
+        <!--game infos-->
+        <TextBlock x:Name="historyTextBox" Grid.Column="1" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top" Height="180" Width="180" Margin="0,43,0,0" Background="#FF9FDCDB"/>
+        <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Top" Width="180" Height="180" Margin="0,248,0,0" Background="#FFB2B3F1"/>
+        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Margin="10,228,0,0" TextWrapping="Wrap" Text="Eaten chess" VerticalAlignment="Top"/>
+        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Margin="10,23,0,0" TextWrapping="Wrap" Text="Move history" VerticalAlignment="Top"/>
     </Grid>
 </Window>

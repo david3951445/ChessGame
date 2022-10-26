@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Diagnostics;
+using System.Xml.Linq;
 
 
 namespace ChessGame
@@ -24,18 +25,19 @@ namespace ChessGame
     /// </summary>
     public partial class MainWindow : Window
     {
-        ChessBoard board;
         public MainWindow() {
             InitializeComponent();
+            this.board = new ChessBoard(gridBoard);
             InitializeBoard();
+            this.history = new History();
+
         }
 
-        private void InitializeBoard() {
-            // Add tip icon
-            Image[,] tipIcon = new Image[8, 8];
+        ChessBoard board;
+        History history;
 
-            // Add chess pieces to board
-            this.board = new ChessBoard(gridBoard);
+        private void InitializeBoard() {
+            // Add tip icon and chess pieces to board
             foreach (var item in board.currentSituation) {
                 if (item != null) {
                     AddEventToChess(item);
@@ -55,18 +57,24 @@ namespace ChessGame
 
         // Event handler
 
-        private void Image_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e) {
+        private void Image_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
             Trace.WriteLine("Image_MouseLeftButtonDown");
 
             Point mousePosition = e.GetPosition(UI);
-            Coords c = board.GetPosition(mousePosition);
-            ChessPiece? chess = board.currentSituation[c.row, c.col];
+            Coords c = board.GetPosition(mousePosition); // Current coordinates
+            ChessPiece ? chess = board.currentSituation[c.row, c.col];
 
             if (chess != null) { // Mouse hit the chess
+                // Record the chess
+                history.tempMiddleMove += $"{chess.name}{(char)('a' + c.col)}{(char)('0' + 8 - c.row )}";
+                board.currentCoord = c;
 
                 // Hold the picked chess
                 board.holdChess = chess;
                 board.currentSituation[c.row, c.col] = null;
+
+                // Find the valid move
+                chess.Rule(board);
 
                 // Remove from board
                 Image img = chess.image;
@@ -86,11 +94,10 @@ namespace ChessGame
             }
         }
         private void Image_MouseMove(object sender, System.Windows.Input.MouseEventArgs e) {
-            Point mousePosition = e.GetPosition(UI);
-            Coords c = board.GetPosition(mousePosition);
+            //Coords c = board.GetPosition(mousePosition); // Current coordinates
 
             if (board.holdChess != null) { // Holding a chess
-
+                Point mousePosition = e.GetPosition(UI);
                 // Let chess follow the mouse
                 double x = mousePosition.X - ChessPiece.Size / 2;
                 double y = mousePosition.Y - ChessPiece.Size / 2;
@@ -99,23 +106,48 @@ namespace ChessGame
                 // If mouse out off bound
                 if (board.isOutOfBound(mousePosition)) {
                     Trace.WriteLine("Out of bound");
-                    PutDown(board.history[board.history.Count - 1]); // Put back to the previous position
+                    history.tempMiddleMove = string.Empty; // reset
+                    PutDown(history.history[history.history.Count - 1]); // Put back to the previous position
                 }
             }
         }
 
         private void Image_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
             Point mousePosition = e.GetPosition(UI);
-            Coords c = board.GetPosition(mousePosition);
-            
+            board.SetPosition(mousePosition); // Current coordinates
+            Coords c = board.currentCoord;
+            ChessPiece? chess = board.currentSituation[c.row, c.col];
+
             if (board.holdChess != null) { // Holding the chess
-                if (board.holdChess.Rule()) { // Conform game rules
-                    board.history.Add(c); // Record the move
-                    historyTextBox.Text += c.ToString(); // Show it on UI
+                // Cancel the tips
+                board.tipIcon[7, 7].Visibility = Visibility.Hidden;
+
+                TextBlock goalGrid = board.tipIcon[c.row, c.col];
+                if (goalGrid.Visibility == Visibility.Visible) { // Valid move
+                    string name;
+                    if (goalGrid.Background == Brushes.Black) { // Non-eat move
+                        name = "E"; // Denote the Empty chess
+                    }
+                    else { // Eat move
+                        name = chess.name; // Eaten chess
+                    }
+
+                    foreach (var item in board.tipIcon) { // Reset tip icons
+                        if (item.Visibility == Visibility.Visible) {
+                            board.resetTipIcon(item);
+                        }
+                    }
+
+                    // Record the move
+                    history.history.Add(c);
+                    history.tempMiddleMove += $"{name}{(char)('a' + c.col)}{(char)('0' + 8 - c.row)}";
+                    historyTextBox.Text += history.tempMiddleMove + " "; // Show it on UI
+                    history.tempMiddleMove = string.Empty; // reset
+
                     PutDown(c); // Put back to board
                 }
                 else {
-                    PutDown(board.history[board.history.Count - 1]); // Put back to the previous position
+                    PutDown(history.history[history.history.Count - 1]); // Put back to the previous position
                 }
             }
         }
