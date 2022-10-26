@@ -50,6 +50,15 @@ namespace ChessGame
             chess.image.MouseLeftButtonUp += Image_MouseLeftButtonUp;
         }
         private void PutDown(Coords c) {
+            history.tempMiddleMove = string.Empty; // Reset temp of middle move expression
+
+            // Reset tip icons
+            foreach (var item in board.tipIcon) { 
+                if (item.Visibility == Visibility.Visible) {
+                    board.resetTipIcon(item);
+                }
+            }
+
             UI.Children.Remove(board.holdChess.image); // Remove from air  
             board.Add(c, board.holdChess); // Add to board
             board.holdChess = null;
@@ -73,7 +82,7 @@ namespace ChessGame
                 board.holdChess = chess;
                 board.currentSituation[c.row, c.col] = null;
 
-                // Find the valid move
+                // Find and show the valid move on board
                 chess.Rule(board);
 
                 // Remove from board
@@ -87,7 +96,6 @@ namespace ChessGame
                 img.Margin = new Thickness(x, y, 0, 0);
                 Grid.SetRow(img, 0);
                 Grid.SetColumn(img, 0);
-
             }
             else {
                 // Cancel some effect
@@ -104,50 +112,41 @@ namespace ChessGame
                 board.holdChess.image.Margin = new Thickness(x, y, 0, 0);
 
                 // If mouse out off bound
-                if (board.isOutOfBound(mousePosition)) {
+                if (board.IsOutOfBound(mousePosition)) {
                     Trace.WriteLine("Out of bound");
-                    history.tempMiddleMove = string.Empty; // reset
-                    PutDown(history.history[history.history.Count - 1]); // Put back to the previous position
+                    PutDown(board.currentCoord); // Put back to the previous position
                 }
             }
         }
 
         private void Image_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
             Point mousePosition = e.GetPosition(UI);
-            board.SetPosition(mousePosition); // Current coordinates
-            Coords c = board.currentCoord;
+            Coords c = board.GetPosition(mousePosition); // Current coordinates
             ChessPiece? chess = board.currentSituation[c.row, c.col];
 
             if (board.holdChess != null) { // Holding the chess
                 // Cancel the tips
-                board.tipIcon[7, 7].Visibility = Visibility.Hidden;
-
                 TextBlock goalGrid = board.tipIcon[c.row, c.col];
                 if (goalGrid.Visibility == Visibility.Visible) { // Valid move
                     string name;
                     if (goalGrid.Background == Brushes.Black) { // Non-eat move
                         name = "E"; // Denote the Empty chess
                     }
-                    else { // Eat move
+                    else if (goalGrid.Background == Brushes.Red) { // Eat move
                         name = chess.name; // Eaten chess
                     }
-
-                    foreach (var item in board.tipIcon) { // Reset tip icons
-                        if (item.Visibility == Visibility.Visible) {
-                            board.resetTipIcon(item);
-                        }
+                    else {
+                        throw new Exception("Undefine tip color");
                     }
 
                     // Record the move
-                    history.history.Add(c);
                     history.tempMiddleMove += $"{name}{(char)('a' + c.col)}{(char)('0' + 8 - c.row)}";
                     historyTextBox.Text += history.tempMiddleMove + " "; // Show it on UI
-                    history.tempMiddleMove = string.Empty; // reset
 
                     PutDown(c); // Put back to board
                 }
                 else {
-                    PutDown(history.history[history.history.Count - 1]); // Put back to the previous position
+                    PutDown(board.currentCoord); // Put back to the previous position
                 }
             }
         }

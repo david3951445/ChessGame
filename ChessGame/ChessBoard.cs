@@ -21,7 +21,7 @@ namespace ChessGame
         public ChessBoard(Grid _grid) {
             this.grid = _grid;
             this.currentSituation = new ChessPiece[SIZE, SIZE];
-            Add(new Coords(0, 4), new King(true));
+            Add(new Coords(0, 4), new Knight(true));
             Add(new Coords(7, 4), new King(false));
             InitializeTipIcon();
             //InitializeCurrentSituation();
@@ -114,12 +114,21 @@ namespace ChessGame
             this.currentSituation[coord.row, coord.col] = chess;
         }
 
-        public bool isOutOfBound(Point pos) {
+        public bool IsOutOfBound(Point pos) {
             return pos.X < 0|| pos.X >= grid.Width || pos.Y < 0 || pos.Y >= grid.Height;
         }
 
         public bool IsOutOfBound(Coords coord) {
             return coord.col < 0 || coord.col >= SIZE || coord.row < 0 || coord.row >= SIZE;
+        }
+
+        /// <summary>
+        /// Set the position of the mouse cursor on the chessboard coordinates
+        /// </summary>
+        /// <param name="mousePosition"> Relative to the top left corner of board </param>
+        public void SetPosition(Point mousePosition) {
+            currentCoord.row = (int)(mousePosition.Y / ChessPiece.Size); // Row index;
+            currentCoord.col = (int)(mousePosition.X / ChessPiece.Size); // Column index
         }
 
         /// <summary>
@@ -134,13 +143,17 @@ namespace ChessGame
             );
         }
 
-        /// <summary>
-        /// Set the position of the mouse cursor on the chessboard coordinates
-        /// </summary>
-        /// <param name="mousePosition"> Relative to the top left corner of board </param>
-        public void SetPosition(Point mousePosition) {
-            currentCoord.row = (int)(mousePosition.Y / ChessPiece.Size); // Row index;
-            currentCoord.col = (int)(mousePosition.X / ChessPiece.Size); // Column index
+        public void AddTip(Coords coord) {
+            if (!IsOutOfBound(coord)) { // Not out of bound
+                ChessPiece? targetChess = currentSituation[coord.row, coord.col];
+                if (targetChess == null) { // No Chess there
+                    tipIcon[coord.row, coord.col].Visibility = Visibility.Visible;
+                }
+                else if (!holdChess.IsSameColor(targetChess)) { // Different color chess there
+                    tipIcon[coord.row, coord.col].Visibility = Visibility.Visible;
+                    tipIcon[coord.row, coord.col].Background = Brushes.Red;
+                }
+            }
         }
     }
 }
