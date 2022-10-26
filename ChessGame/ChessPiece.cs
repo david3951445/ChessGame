@@ -33,17 +33,14 @@ namespace ChessGame
                 HorizontalAlignment = HorizontalAlignment.Left,
                 VerticalAlignment = VerticalAlignment.Top,
             };
-            image.MouseRightButtonDown += Image_MouseRightButtonDown;
         }
 
         public static double Size = 100; // image size
         public bool isWhite;
-        public Image image;
-        public string? name;
+        public Image image; // Image of chess
+        public string? name; // Abbreviation name
+        protected Coords[] dirs; // Directions of move
 
-        private void Image_MouseRightButtonDown(object sender, MouseButtonEventArgs e) {
-            //throw new NotImplementedException();
-        }
         protected void SetImageSource() {
             string fileName;
             if (isWhite) {
@@ -72,6 +69,7 @@ namespace ChessGame
             SetImageSource();
 
             // King's 8 move
+            dirs = new Coords[8];
             dirs[0] = new Coords(0, 1);
             dirs[4] = new Coords(1, 1);
             for (int i = 0; i < 3; i++) {
@@ -80,11 +78,8 @@ namespace ChessGame
             }
         }
 
-        private readonly Coords[] dirs = new Coords[8]; // directions
-
         public override void Rule(ChessBoard board) {                    
             foreach (var bias in dirs) {
-                Trace.WriteLine(bias);
                 board.AddTip(board.currentCoord + bias);
             }
         }
@@ -95,8 +90,23 @@ namespace ChessGame
         public Queen(bool _isWhite) : base(_isWhite) {
             name = "Q";
             SetImageSource();
+
+            // Qing's 8 direction
+            dirs = new Coords[8];
+            dirs[0] = new Coords(0, 1);
+            dirs[4] = new Coords(1, 1);
+            for (int i = 0; i < 3; i++) {
+                dirs[i + 1] = dirs[i].GetRotate90();
+                dirs[i + 5] = dirs[i + 4].GetRotate90();
+            }
         }
         public override void Rule(ChessBoard board) {
+            foreach (var bias in dirs) {
+                Coords coord = board.currentCoord + bias;
+                while (board.AddTip(coord)) {
+                    coord += bias;
+                }
+            }
         }
     }
 
@@ -105,8 +115,21 @@ namespace ChessGame
         public Rook(bool _isWhite) : base(_isWhite) {
             name = "R";
             SetImageSource();
+
+            dirs = new Coords[4];
+            dirs[0] = new Coords(0, 1);
+            for (int i = 0; i < 3; i++) {
+                dirs[i + 1] = dirs[i].GetRotate90();
+            }
         }
+
         public override void Rule(ChessBoard board) {
+            foreach (var bias in dirs) {
+                Coords coord = board.currentCoord + bias;
+                while (board.AddTip(coord)) {
+                    coord += bias;
+                }
+            }
         }
     }
 
@@ -115,8 +138,20 @@ namespace ChessGame
         public Bishop(bool _isWhite) : base(_isWhite) {
             name = "B";
             SetImageSource();
+
+            dirs = new Coords[4];
+            dirs[0] = new Coords(1, 1);
+            for (int i = 0; i < 3; i++) {
+                dirs[i + 1] = dirs[i].GetRotate90();
+            }
         }
         public override void Rule(ChessBoard board) {
+            foreach (var bias in dirs) {
+                Coords coord = board.currentCoord + bias;
+                while (board.AddTip(coord)) {
+                    coord += bias;
+                }
+            }
         }
     }
 
@@ -127,6 +162,7 @@ namespace ChessGame
             SetImageSource();
 
             // Knight's 8 move
+            dirs = new Coords[8];
             dirs[0] = new Coords(1, 2);
             dirs[4] = new Coords(2, 1);
             for (int i = 0; i < 3; i++) {
@@ -139,7 +175,6 @@ namespace ChessGame
 
         public override void Rule(ChessBoard board) {
             foreach (var bias in dirs) {
-                Trace.WriteLine(bias);
                 board.AddTip(board.currentCoord + bias);
             }
         }

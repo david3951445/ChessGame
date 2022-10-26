@@ -141,7 +141,7 @@ namespace ChessGame
 
                     // Record the move
                     history.tempMiddleMove += $"{name}{(char)('a' + c.col)}{(char)('0' + 8 - c.row)}";
-                    historyTextBox.Text += history.tempMiddleMove + " "; // Show it on UI
+                    historyTextBox.Text += history.tempMiddleMove + "  "; // Show it on UI
 
                     PutDown(c); // Put back to board
                 }

@@ -20,11 +20,12 @@ namespace ChessGame
     {
         public ChessBoard(Grid _grid) {
             this.grid = _grid;
+            ChessPiece.Size = grid.Width / 8;
             this.currentSituation = new ChessPiece[SIZE, SIZE];
-            Add(new Coords(0, 4), new Knight(true));
-            Add(new Coords(7, 4), new King(false));
+            //Add(new Coords(0, 4), new Knight(true));
+            //Add(new Coords(7, 4), new King(false));
             InitializeTipIcon();
-            //InitializeCurrentSituation();
+            InitializeCurrentSituation();
         }
 
         private const int SIZE = 8; // Number of grids on a side
@@ -61,7 +62,6 @@ namespace ChessGame
         }
 
         private void InitializeCurrentSituation() {
-            ChessPiece.Size = grid.Width / 8;
 
             bool isWhite = true;
             Add(new Coords(7, 0), new Rook(isWhite));
@@ -72,29 +72,24 @@ namespace ChessGame
             Add(new Coords(7, 5), new Bishop(isWhite));
             Add(new Coords(7, 6), new Knight(isWhite));
             Add(new Coords(7, 7), new Rook(isWhite));
-            for (int j = 0; j < 8; j++) {
-                Add(new Coords(6, j), new Pawn(isWhite));
-            }
-            isWhite = false;
-            Add(new Coords(0, 0), new Rook(isWhite));
-            Add(new Coords(0, 1), new Knight(isWhite));
-            Add(new Coords(0, 2), new Bishop(isWhite));
-            Add(new Coords(0, 3), new Queen(isWhite));
-            Add(new Coords(0, 4), new King(isWhite));
-            Add(new Coords(0, 5), new Bishop(isWhite));
-            Add(new Coords(0, 6), new Knight(isWhite));
-            Add(new Coords(0, 7), new Rook(isWhite));
-            for (int j = 0; j < 8; j++) {
-                Add(new Coords(1, j), new Pawn(isWhite));
-            }
+            //for (int j = 0; j < 8; j++) {
+            //    Add(new Coords(6, j), new Pawn(isWhite));
+            //}
+            //isWhite = false;
+            //Add(new Coords(0, 0), new Rook(isWhite));
+            //Add(new Coords(0, 1), new Knight(isWhite));
+            //Add(new Coords(0, 2), new Bishop(isWhite));
+            //Add(new Coords(0, 3), new Queen(isWhite));
+            //Add(new Coords(0, 4), new King(isWhite));
+            //Add(new Coords(0, 5), new Bishop(isWhite));
+            //Add(new Coords(0, 6), new Knight(isWhite));
+            //Add(new Coords(0, 7), new Rook(isWhite));
+            //for (int j = 0; j < 8; j++) {
+            //    Add(new Coords(1, j), new Pawn(isWhite));
+            //}
         }
 
         public void PickUp(Grid air, Point mousePosition) { // Take the chess piece from the board into the air
-            //Image img = holdChess.image;
-
-            //// Remove from board
-            //grid.Children.Remove(img);
-
             //// Add to air
             //double x = mousePosition.X - ChessPiece.Size / 2;
             //double y = mousePosition.Y - ChessPiece.Size / 2;
@@ -142,18 +137,30 @@ namespace ChessGame
                 (int)(mousePosition.X / ChessPiece.Size) // Column index
             );
         }
-
-        public void AddTip(Coords coord) {
+        /// <summary>
+        /// Add tip to the given coord. Will not add if the coord is invalid.
+        /// </summary>
+        /// <param name="coord"></param>
+        /// <returns>Return is for Queen, Rook, Bishop</returns>
+        public bool AddTip(Coords coord) {
             if (!IsOutOfBound(coord)) { // Not out of bound
                 ChessPiece? targetChess = currentSituation[coord.row, coord.col];
                 if (targetChess == null) { // No Chess there
                     tipIcon[coord.row, coord.col].Visibility = Visibility.Visible;
+
+                    return true;
                 }
-                else if (!holdChess.IsSameColor(targetChess)) { // Different color chess there
-                    tipIcon[coord.row, coord.col].Visibility = Visibility.Visible;
-                    tipIcon[coord.row, coord.col].Background = Brushes.Red;
+                else { // Is chess there
+                    if (!holdChess.IsSameColor(targetChess)) { // Different color chess there
+                        tipIcon[coord.row, coord.col].Visibility = Visibility.Visible;
+                        tipIcon[coord.row, coord.col].Background = Brushes.Red;
+                    }
+
+                    return false;
                 }
             }
+
+            return false; // Out of bound or Is chess there
         }
     }
 }
