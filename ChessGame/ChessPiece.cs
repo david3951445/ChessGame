@@ -23,8 +23,8 @@ namespace ChessGame
             isWhite = _isWhite;
             image = new Image() {
                 //Stretch = Stretch.Fill,
-                Width = Size,
-                Height = Size,
+                Width = size,
+                Height = size,
                 HorizontalAlignment = HorizontalAlignment.Left,
                 VerticalAlignment = VerticalAlignment.Top,
             };
@@ -32,10 +32,10 @@ namespace ChessGame
             SetImageSource();
         }
 
-        public static double Size = 100; // image size
-        public bool isWhite; // Whit or black
+        public static double size; // image size
+        public readonly bool isWhite; // White or black
         public Image image; // Image of chess
-        public string? name; // Abbreviation name
+        public readonly string? name; // Abbreviation name
         protected Coords[] dirs; // Directions of move
 
         private void SetImageSource() {

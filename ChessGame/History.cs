@@ -23,13 +23,13 @@ namespace ChessGame
         public List<string> list = new List<string>(); // History, use the standard record method. (ex. R3xd7, O-O)
         public List<Coords> history = new List<Coords>(); // Record the coord of board, for testing
 
+        public void FirstMove() {
+
+        }
         public void PreviousMove() {
 
         }
         public void NextMove() {
-
-        }
-        public void FirstMove() {
 
         }
         public void LastMove() {

@@ -20,7 +20,7 @@ namespace ChessGame
     {
         public ChessBoard(Grid _grid) {
             this.grid = _grid;
-            ChessPiece.Size = grid.Width / 8;
+            ChessPiece.size = grid.Width / 8;
             this.currentSituation = new ChessPiece[SIZE, SIZE];
             //Add(new Coords(0, 4), new Knight(true));
             //Add(new Coords(7, 4), new King(false));
@@ -89,16 +89,6 @@ namespace ChessGame
             }
         }
 
-        public void PickUp(Grid air, Point mousePosition) { // Take the chess piece from the board into the air
-            //// Add to air
-            //double x = mousePosition.X - ChessPiece.Size / 2;
-            //double y = mousePosition.Y - ChessPiece.Size / 2;
-            //air.Children.Add(img);
-            //img.Margin = new Thickness(x, y, 0, 0);
-            //Grid.SetRow(img, 0);
-            //Grid.SetColumn(img, 0);
-        }
-
         // Add the chess to board corresponding to the coordinates
         public void Add(Coords coord, ChessPiece chess) { 
             Image img = chess.image;
@@ -106,14 +96,14 @@ namespace ChessGame
             grid.Children.Add(img);
             Grid.SetRow(img, coord.row);
             Grid.SetColumn(img, coord.col);
-            this.currentSituation[coord.row, coord.col] = chess;
+            currentSituation[coord.row, coord.col] = chess;
         }
 
-        public bool IsOutOfBound(Point pos) {
+        public bool IsOutOfBound(Point pos) { // With respect to board mouse position
             return pos.X < 0|| pos.X >= grid.Width || pos.Y < 0 || pos.Y >= grid.Height;
         }
 
-        public bool IsOutOfBound(Coords coord) {
+        public bool IsOutOfBound(Coords coord) { // With respect to board coordinate
             return coord.col < 0 || coord.col >= SIZE || coord.row < 0 || coord.row >= SIZE;
         }
 
@@ -122,8 +112,8 @@ namespace ChessGame
         /// </summary>
         /// <param name="mousePosition"> Relative to the top left corner of board </param>
         public void SetPosition(Point mousePosition) {
-            pickUpCoord.row = (int)(mousePosition.Y / ChessPiece.Size); // Row index;
-            pickUpCoord.col = (int)(mousePosition.X / ChessPiece.Size); // Column index
+            pickUpCoord.row = (int)(mousePosition.Y / ChessPiece.size); // Row index;
+            pickUpCoord.col = (int)(mousePosition.X / ChessPiece.size); // Column index
         }
 
         /// <summary>
@@ -133,8 +123,8 @@ namespace ChessGame
         /// <returns> Coordinate of board. output = (row index, column index) </returns>
         public Coords GetPosition(Point mousePosition) {
             return new Coords (
-                (int)(mousePosition.Y / ChessPiece.Size), // Row index
-                (int)(mousePosition.X / ChessPiece.Size) // Column index
+                (int)(mousePosition.Y / ChessPiece.size), // Row index
+                (int)(mousePosition.X / ChessPiece.size) // Column index
             );
         }
         /// <summary>
