@@ -29,11 +29,11 @@ namespace ChessGame
         }
 
         private const int SIZE = 8; // Number of grids on a side
-        public bool isWhiteFirst = true;
+        public bool isWhiteTurn = true;
         //public bool isHoldingChess = false;
         public Grid grid; // Corresponding grid item in MainWindow
         public TextBlock[,] tipIcon = new TextBlock[SIZE, SIZE]; // The tips when moving the chess
-        public Coords currentCoord; // Current Coordinates when mouse pick up and put down a chess
+        public Coords pickUpCoord; // Current Coordinates when mouse pick up a chess
         public ChessPiece?[,] currentSituation; // Current game situation of the board
         public ChessPiece? holdChess; // Current holding chess
         //public Stack<Coords> eatCoords = new Stack<Coords>(); // The coordinates where you can eat chess
@@ -122,8 +122,8 @@ namespace ChessGame
         /// </summary>
         /// <param name="mousePosition"> Relative to the top left corner of board </param>
         public void SetPosition(Point mousePosition) {
-            currentCoord.row = (int)(mousePosition.Y / ChessPiece.Size); // Row index;
-            currentCoord.col = (int)(mousePosition.X / ChessPiece.Size); // Column index
+            pickUpCoord.row = (int)(mousePosition.Y / ChessPiece.Size); // Row index;
+            pickUpCoord.col = (int)(mousePosition.X / ChessPiece.Size); // Column index
         }
 
         /// <summary>
@@ -145,12 +145,12 @@ namespace ChessGame
         public bool AddTip(Coords coord) {
             if (!IsOutOfBound(coord)) { // Not out of bound
                 ChessPiece? targetChess = currentSituation[coord.row, coord.col];
-                if (targetChess == null) { // No Chess there
+                if (targetChess == null) { // No Chess there (Non-eaten)
                     tipIcon[coord.row, coord.col].Visibility = Visibility.Visible;
 
                     return true;
                 }
-                else { // Is chess there
+                else { // Is chess there (Eaten)
                     if (!holdChess.IsSameColor(targetChess)) { // Different color chess there
                         tipIcon[coord.row, coord.col].Visibility = Visibility.Visible;
                         tipIcon[coord.row, coord.col].Background = Brushes.Red;
@@ -161,6 +161,13 @@ namespace ChessGame
             }
 
             return false; // Out of bound or Is chess there
+        }
+
+        public bool isValidMove() {
+            //Debug.WriteLine(holdChess.isWhite);
+            //Debug.WriteLine(isWhiteTurn);
+
+            return true;
         }
     }
 }

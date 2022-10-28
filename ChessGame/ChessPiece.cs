@@ -17,13 +17,6 @@ using System.Drawing;
 
 namespace ChessGame
 {
-    //internal interface IChessPiece
-    //{
-    //    //int X { get; set; }
-    //    Image image { get; set; } // image of a chess
-    //    bool isWhite { get; set; }
-    //    void Rule();
-    //}
     internal abstract class ChessPiece
     {
         public ChessPiece(bool _isWhite, string _name) {
@@ -68,7 +61,7 @@ namespace ChessGame
 
     class King : ChessPiece
     {
-        public King(bool _isWhite) : base (_isWhite, "K") {
+        public King(bool _isWhite) : base(_isWhite, "K") {
             // King's 8 move
             dirs = new Coords[8];
             dirs[0] = new Coords(0, 1);
@@ -79,9 +72,9 @@ namespace ChessGame
             }
         }
 
-        public override void Rule(ChessBoard board) {                    
+        public override void Rule(ChessBoard board) {
             foreach (var bias in dirs) {
-                board.AddTip(board.currentCoord + bias);
+                board.AddTip(board.pickUpCoord + bias);
             }
         }
     }
@@ -101,7 +94,7 @@ namespace ChessGame
 
         public override void Rule(ChessBoard board) {
             foreach (var bias in dirs) {
-                Coords coord = board.currentCoord + bias;
+                Coords coord = board.pickUpCoord + bias;
                 while (board.AddTip(coord)) {
                     coord += bias;
                 }
@@ -121,7 +114,7 @@ namespace ChessGame
 
         public override void Rule(ChessBoard board) {
             foreach (var bias in dirs) {
-                Coords coord = board.currentCoord + bias;
+                Coords coord = board.pickUpCoord + bias;
                 while (board.AddTip(coord)) {
                     coord += bias;
                 }
@@ -140,7 +133,7 @@ namespace ChessGame
         }
         public override void Rule(ChessBoard board) {
             foreach (var bias in dirs) {
-                Coords coord = board.currentCoord + bias;
+                Coords coord = board.pickUpCoord + bias;
                 while (board.AddTip(coord)) {
                     coord += bias;
                 }
@@ -161,11 +154,9 @@ namespace ChessGame
             }
         }
 
-        private readonly Coords[] dirs = new Coords[8]; // directions
-
         public override void Rule(ChessBoard board) {
             foreach (var bias in dirs) {
-                board.AddTip(board.currentCoord + bias);
+                board.AddTip(board.pickUpCoord + bias);
             }
         }
     }
@@ -185,7 +176,7 @@ namespace ChessGame
         }
 
         public override void Rule(ChessBoard board) {
-            Coords coord = board.currentCoord;
+            Coords coord = board.pickUpCoord;
             ChessPiece? targetChess;
 
             // Forward
@@ -196,7 +187,7 @@ namespace ChessGame
             }
 
             // Forward, first move
-            bool isFirstMove = board.currentCoord.row == 1 && !isWhite || board.currentCoord.row == 6 && isWhite;
+            bool isFirstMove = board.pickUpCoord.row == 1 && !isWhite || board.pickUpCoord.row == 6 && isWhite;
             if (isFirstMove) {
                 coord += dirs[0];
                 targetChess = board.currentSituation[coord.row, coord.col];
@@ -207,11 +198,13 @@ namespace ChessGame
 
             // Both sides
             for (int i = 1; i < 3; i++) {
-                coord = board.currentCoord + dirs[i];
-                targetChess = board.currentSituation[coord.row, coord.col];
-                if (targetChess != null && !IsSameColor(targetChess)) { // Is Chess there && Different color chess there
-                    board.tipIcon[coord.row, coord.col].Visibility = Visibility.Visible;
-                    board.tipIcon[coord.row, coord.col].Background = Brushes.Red;
+                coord = board.pickUpCoord + dirs[i];
+                if (!board.IsOutOfBound(coord)) {
+                    targetChess = board.currentSituation[coord.row, coord.col];
+                    if (targetChess != null && !IsSameColor(targetChess)) { // Is Chess there && Different color chess there
+                        board.tipIcon[coord.row, coord.col].Visibility = Visibility.Visible;
+                        board.tipIcon[coord.row, coord.col].Background = Brushes.Red;
+                    }
                 }
             }
 

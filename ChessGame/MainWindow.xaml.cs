@@ -53,7 +53,7 @@ namespace ChessGame
             history.tempMiddleMove = string.Empty; // Reset temp of middle move expression
 
             // Reset tip icons
-            foreach (var item in board.tipIcon) { 
+            foreach (var item in board.tipIcon) {
                 if (item.Visibility == Visibility.Visible) {
                     board.resetTipIcon(item);
                 }
@@ -71,12 +71,12 @@ namespace ChessGame
 
             Point mousePosition = e.GetPosition(UI);
             Coords c = board.GetPosition(mousePosition); // Current coordinates
-            ChessPiece ? chess = board.currentSituation[c.row, c.col];
+            ChessPiece? chess = board.currentSituation[c.row, c.col];
 
             if (chess != null) { // Mouse hit the chess
                 // Record the chess
-                history.tempMiddleMove += $"{chess.name}{(char)('a' + c.col)}{(char)('0' + 8 - c.row )}";
-                board.currentCoord = c;
+                history.tempMiddleMove += $"{chess.name}{(char)('a' + c.col)}{(char)('0' + 8 - c.row)}";
+                board.pickUpCoord = c;
 
                 // Hold the picked chess
                 board.holdChess = chess;
@@ -113,8 +113,8 @@ namespace ChessGame
 
                 // If mouse out off bound
                 if (board.IsOutOfBound(mousePosition)) {
-                    Trace.WriteLine("Out of bound");
-                    PutDown(board.currentCoord); // Put back to the previous position
+                    Debug.WriteLine("Out of bound");
+                    PutDown(board.pickUpCoord); // Put back to the previous position
                 }
             }
         }
@@ -125,15 +125,17 @@ namespace ChessGame
             ChessPiece? chess = board.currentSituation[c.row, c.col];
 
             if (board.holdChess != null) { // Holding the chess
-                // Cancel the tips
+                // Judgment when putting down chess
                 TextBlock goalGrid = board.tipIcon[c.row, c.col];
-                if (goalGrid.Visibility == Visibility.Visible) { // Valid move
+                if ((goalGrid.Visibility == Visibility.Visible) && !(board.holdChess.isWhite ^ board.isWhiteTurn)) { // Valid move
                     string name;
                     if (goalGrid.Background == Brushes.Black) { // Non-eat move
-                        name = "E"; // Denote the Empty chess
+                        name = "E"; // Denote the Empty chess name
                     }
                     else if (goalGrid.Background == Brushes.Red) { // Eat move
-                        name = chess.name; // Eaten chess
+                        name = chess.name; // Eaten chess name
+
+                        RemoveEatenChessFromBoard(chess); // Remove it from board to eaten chess stackpanel
                     }
                     else {
                         throw new Exception("Undefine tip color");
@@ -144,11 +146,25 @@ namespace ChessGame
                     historyTextBox.Text += history.tempMiddleMove + "  "; // Show it on UI
 
                     PutDown(c); // Put back to board
+                    board.isWhiteTurn = !board.isWhiteTurn; // Switch opponent 
                 }
                 else {
-                    PutDown(board.currentCoord); // Put back to the previous position
+                    PutDown(board.pickUpCoord); // Put back to the previous position
                 }
             }
+        }
+        private void RemoveEatenChessFromBoard(ChessPiece chess) {
+            StackPanel eatenChess = whiteEatenChess;
+            if (chess.isWhite) {
+                eatenChess = blackEatenChess;
+            }
+
+            gridBoard.Children.Remove(chess.image);
+            eatenChess.Children.Add(chess.image);
+            chess.image.Width = eatenChess.Height;
+            chess.image.Height = eatenChess.Height;
+            history.eatenChess.Push(chess);
+            chess = null;
         }
 
         private void ImageBoard_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {

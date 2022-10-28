@@ -5,19 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ChessGame"
         mc:Ignorable="d"
-        Title="MainWindow" Width="1000" Height="840">
-    <Grid x:Name="UI" Margin="0,0,0,0">
+        Title="MainWindow" SizeToContent="WidthAndHeight">
+    <Grid x:Name="UI" HorizontalAlignment="Left" VerticalAlignment="Top">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="800"/>
             <ColumnDefinition Width="200"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="800"/>
+            <RowDefinition Height="1000"/>
         </Grid.RowDefinitions>
 
         <!--Board-->
-        <Image x:Name="imageBoard" Grid.Row="0" Grid.Column="0" Source="img/board.png" Grid.ColumnSpan="1" MouseLeftButtonDown="ImageBoard_MouseLeftButtonDown" MouseMove="imageBoard_MouseMove" Panel.ZIndex="-2"/>
-        <Grid x:Name="gridBoard" Grid.Row="0" Grid.Column="0" Width="800" Height="800">
+        <Image x:Name="imageBoard" Grid.Row="0" Grid.Column="0" Source="img/board.png" Grid.ColumnSpan="1" MouseLeftButtonDown="ImageBoard_MouseLeftButtonDown" MouseMove="imageBoard_MouseMove" Panel.ZIndex="-2" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+        <Grid x:Name="gridBoard" Grid.Row="0" Grid.Column="0" Width="800" Height="800" HorizontalAlignment="Left" VerticalAlignment="Top">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
@@ -56,6 +56,8 @@
             <TextBlock Grid.Row="7" Grid.Column="6" Text="g" Foreground="#FFEEEED2" HorizontalAlignment="Right" Margin="0,0,0,0" VerticalAlignment="Bottom" FontSize="18" FontWeight="Bold" Height="25" Width="25"/>
             <TextBlock Grid.Row="7" Grid.Column="7" Text="h" Foreground="#FF769656" HorizontalAlignment="Right" Margin="0,0,0,0" VerticalAlignment="Bottom" FontSize="18" FontWeight="Bold" Height="25" Width="25"/>
         </Grid>
+        <StackPanel x:Name="whiteEatenChess" Height="40" HorizontalAlignment="Center" VerticalAlignment="Top" Width="800" Margin="0,845,0,0" Background="#FF909090" Orientation="Horizontal"/>
+        <StackPanel x:Name="blackEatenChess" Height="40" HorizontalAlignment="Center" VerticalAlignment="Top" Width="800" Margin="0,805,0,0" Background="#FFCECECE" Orientation="Horizontal"/>
 
         <!--buttons-->
 
@@ -64,5 +66,7 @@
         <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Top" Width="180" Height="180" Margin="0,248,0,0" Background="#FFB2B3F1"/>
         <TextBlock Grid.Column="1" HorizontalAlignment="Left" Margin="10,228,0,0" TextWrapping="Wrap" Text="Eaten chess" VerticalAlignment="Top"/>
         <TextBlock Grid.Column="1" HorizontalAlignment="Left" Margin="10,23,0,0" TextWrapping="Wrap" Text="Move history" VerticalAlignment="Top"/>
+
     </Grid>
+
 </Window>
