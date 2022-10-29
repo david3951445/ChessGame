@@ -13,7 +13,6 @@ using System.Diagnostics;
 using System.ComponentModel;
 using System.Runtime.ExceptionServices;
 using System.Xml.Linq;
-using System.Drawing;
 
 namespace ChessGame
 {
@@ -55,6 +54,10 @@ namespace ChessGame
         public bool IsSameColor(ChessPiece chess) {
             return !(isWhite ^ chess.isWhite);
         }
+        public void FollowMousePosition(Point mousePosition) {
+            image.Margin = new Thickness(mousePosition.X - size / 2, mousePosition.Y - size / 2, 0, 0);
+        }
+
 
         abstract public void Rule(ChessBoard board); // Find the valid move
     }
@@ -74,7 +77,7 @@ namespace ChessGame
 
         public override void Rule(ChessBoard board) {
             foreach (var bias in dirs) {
-                board.AddTip(board.pickUpCoord + bias);
+                board.AddTip(board.pickUpCoord + bias, this);
             }
         }
     }
@@ -95,7 +98,7 @@ namespace ChessGame
         public override void Rule(ChessBoard board) {
             foreach (var bias in dirs) {
                 Coords coord = board.pickUpCoord + bias;
-                while (board.AddTip(coord)) {
+                while (board.AddTip(coord, this)) {
                     coord += bias;
                 }
             }
@@ -115,7 +118,7 @@ namespace ChessGame
         public override void Rule(ChessBoard board) {
             foreach (var bias in dirs) {
                 Coords coord = board.pickUpCoord + bias;
-                while (board.AddTip(coord)) {
+                while (board.AddTip(coord, this)) {
                     coord += bias;
                 }
             }
@@ -134,7 +137,7 @@ namespace ChessGame
         public override void Rule(ChessBoard board) {
             foreach (var bias in dirs) {
                 Coords coord = board.pickUpCoord + bias;
-                while (board.AddTip(coord)) {
+                while (board.AddTip(coord, this)) {
                     coord += bias;
                 }
             }
@@ -156,7 +159,7 @@ namespace ChessGame
 
         public override void Rule(ChessBoard board) {
             foreach (var bias in dirs) {
-                board.AddTip(board.pickUpCoord + bias);
+                board.AddTip(board.pickUpCoord + bias, this);
             }
         }
     }

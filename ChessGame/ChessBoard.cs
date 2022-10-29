@@ -128,11 +128,11 @@ namespace ChessGame
             );
         }
         /// <summary>
-        /// Add tip to the given coord. Will not add if the coord is invalid.
+        /// Add tip to the given coord with the holding chess.
         /// </summary>
         /// <param name="coord"></param>
         /// <returns>Return is for Queen, Rook, Bishop</returns>
-        public bool AddTip(Coords coord) {
+        public bool AddTip(Coords coord, ChessPiece chess) {
             if (!IsOutOfBound(coord)) { // Not out of bound
                 ChessPiece? targetChess = currentSituation[coord.row, coord.col];
                 if (targetChess == null) { // No Chess there (Non-eaten)
@@ -141,7 +141,7 @@ namespace ChessGame
                     return true;
                 }
                 else { // Is chess there (Eaten)
-                    if (!holdChess.IsSameColor(targetChess)) { // Different color chess there
+                    if (!chess.IsSameColor(targetChess)) { // Different color chess there
                         tipIcon[coord.row, coord.col].Visibility = Visibility.Visible;
                         tipIcon[coord.row, coord.col].Background = Brushes.Red;
                     }
