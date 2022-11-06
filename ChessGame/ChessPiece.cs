@@ -13,6 +13,7 @@ using System.Diagnostics;
 using System.ComponentModel;
 using System.Runtime.ExceptionServices;
 using System.Xml.Linq;
+using System.DirectoryServices;
 
 namespace ChessGame
 {
@@ -60,9 +61,38 @@ namespace ChessGame
 
 
         public abstract void Rule(ChessBoard board); // Find the valid move
+
+        protected static class Dir
+        {
+            public static Coords[] Rook() { // Plus
+                return AllDirectios(new Coords(0, 1));
+            }
+            public static Coords[] Bishop() { // X
+                return AllDirectios(new Coords(1, 1));
+            }
+            public static Coords[] King() { // Star
+                return Rook().Union(Bishop()).ToArray(); // Plus + X = Star
+            }
+            public static Coords[] Knight() {
+                return AllDirectios(new Coords(1, 2)).Union(AllDirectios(new Coords(2, 1))).ToArray();
+            }
+            // Here other directions can be defined to generate self-created chess pieces
+            // private static Coords[] CustomDir1() {
+            //      ...
+            // }
+
+            private static Coords[] AllDirectios(Coords c) { // All directions with a ninety-degree angle
+                Coords[] dirs = new Coords[4];
+                dirs[0] = c;
+                for (int i = 0; i < 3; i++) {
+                    dirs[i + 1] = dirs[i].GetRotate90();
+                }
+                return dirs;
+            }
+        }
     }
 
-    abstract class AnyGridChessPiece : ChessPiece // Queen, Rook. Bishop can move any number of grids
+    abstract class AnyGridChessPiece : ChessPiece // Can move any number of grids. ex. Queen, Rook. Bishop 
     {
         protected AnyGridChessPiece(bool _isWhite, string _name) : base(_isWhite, _name) { }
 
@@ -76,7 +106,7 @@ namespace ChessGame
         }
     }
 
-    abstract class OneGridChessPiece : ChessPiece // Queen, Rook. Bishop can move any number of grids
+    abstract class OneGridChessPiece : ChessPiece //Can move one number of grids. ex. King, Knight
     {
         protected OneGridChessPiece(bool _isWhite, string _name) : base(_isWhite, _name) { }
 
@@ -90,14 +120,7 @@ namespace ChessGame
     class King : OneGridChessPiece
     {
         public King(bool _isWhite) : base(_isWhite, "K") {
-            // King's 8 move
-            dirs = new Coords[8];
-            dirs[0] = new Coords(0, 1);
-            dirs[4] = new Coords(1, 1);
-            for (int i = 0; i < 3; i++) {
-                dirs[i + 1] = dirs[i].GetRotate90();
-                dirs[i + 5] = dirs[i + 4].GetRotate90();
-            }
+            dirs = Dir.King();
         }
 
         public override void Rule(ChessBoard board) {
@@ -110,50 +133,29 @@ namespace ChessGame
     class Queen : AnyGridChessPiece
     {
         public Queen(bool _isWhite) : base(_isWhite, "Q") {
-            // Qing's 8 direction
-            dirs = new Coords[8];
-            dirs[0] = new Coords(0, 1);
-            dirs[4] = new Coords(1, 1);
-            for (int i = 0; i < 3; i++) {
-                dirs[i + 1] = dirs[i].GetRotate90();
-                dirs[i + 5] = dirs[i + 4].GetRotate90();
-            }
+            dirs = Dir.King();
         }
     }
 
     class Rook : AnyGridChessPiece
     {
         public Rook(bool _isWhite) : base(_isWhite, "R") {
-            dirs = new Coords[4];
-            dirs[0] = new Coords(0, 1);
-            for (int i = 0; i < 3; i++) {
-                dirs[i + 1] = dirs[i].GetRotate90();
-            }
+            dirs = Dir.Rook();
         }
     }
 
     class Bishop : AnyGridChessPiece
     {
         public Bishop(bool _isWhite) : base(_isWhite, "B") {
-            dirs = new Coords[4];
-            dirs[0] = new Coords(1, 1);
-            for (int i = 0; i < 3; i++) {
-                dirs[i + 1] = dirs[i].GetRotate90();
-            }
+            dirs = Dir.Bishop();
         }
     }
 
     class Knight : OneGridChessPiece
     {
         public Knight(bool _isWhite) : base(_isWhite, "N") {
-            // Knight's 8 move
-            dirs = new Coords[8];
-            dirs[0] = new Coords(1, 2);
-            dirs[4] = new Coords(2, 1);
-            for (int i = 0; i < 3; i++) {
-                dirs[i + 1] = dirs[i].GetRotate90();
-                dirs[i + 5] = dirs[i + 4].GetRotate90();
-            }
+            dirs = Dir.Knight();
+
         }
     }
 
