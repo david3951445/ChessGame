@@ -18,7 +18,7 @@ namespace ChessGame
 {
     internal abstract class ChessPiece
     {
-        public ChessPiece(bool _isWhite, string _name) {
+        protected ChessPiece(bool _isWhite, string _name) {
             isWhite = _isWhite;
             image = new Image() {
                 //Stretch = Stretch.Fill,
@@ -59,10 +59,35 @@ namespace ChessGame
         }
 
 
-        abstract public void Rule(ChessBoard board); // Find the valid move
+        public abstract void Rule(ChessBoard board); // Find the valid move
     }
 
-    class King : ChessPiece
+    abstract class AnyGridChessPiece : ChessPiece // Queen, Rook. Bishop can move any number of grids
+    {
+        protected AnyGridChessPiece(bool _isWhite, string _name) : base(_isWhite, _name) { }
+
+        public override void Rule(ChessBoard board) {
+            foreach (var bias in dirs) {
+                Coords coord = board.pickUpCoord + bias;
+                while (board.AddTip(coord, this)) {
+                    coord += bias;
+                }
+            }
+        }
+    }
+
+    abstract class OneGridChessPiece : ChessPiece // Queen, Rook. Bishop can move any number of grids
+    {
+        protected OneGridChessPiece(bool _isWhite, string _name) : base(_isWhite, _name) { }
+
+        public override void Rule(ChessBoard board) {
+            foreach (var bias in dirs) {
+                board.AddTip(board.pickUpCoord + bias, this);
+            }
+        }
+    }
+
+    class King : OneGridChessPiece
     {
         public King(bool _isWhite) : base(_isWhite, "K") {
             // King's 8 move
@@ -76,13 +101,13 @@ namespace ChessGame
         }
 
         public override void Rule(ChessBoard board) {
-            foreach (var bias in dirs) {
-                board.AddTip(board.pickUpCoord + bias, this);
-            }
+            base.Rule(board);
+
+            // Castling
         }
     }
 
-    class Queen : ChessPiece
+    class Queen : AnyGridChessPiece
     {
         public Queen(bool _isWhite) : base(_isWhite, "Q") {
             // Qing's 8 direction
@@ -94,18 +119,9 @@ namespace ChessGame
                 dirs[i + 5] = dirs[i + 4].GetRotate90();
             }
         }
-
-        public override void Rule(ChessBoard board) {
-            foreach (var bias in dirs) {
-                Coords coord = board.pickUpCoord + bias;
-                while (board.AddTip(coord, this)) {
-                    coord += bias;
-                }
-            }
-        }
     }
 
-    class Rook : ChessPiece
+    class Rook : AnyGridChessPiece
     {
         public Rook(bool _isWhite) : base(_isWhite, "R") {
             dirs = new Coords[4];
@@ -114,18 +130,9 @@ namespace ChessGame
                 dirs[i + 1] = dirs[i].GetRotate90();
             }
         }
-
-        public override void Rule(ChessBoard board) {
-            foreach (var bias in dirs) {
-                Coords coord = board.pickUpCoord + bias;
-                while (board.AddTip(coord, this)) {
-                    coord += bias;
-                }
-            }
-        }
     }
 
-    class Bishop : ChessPiece
+    class Bishop : AnyGridChessPiece
     {
         public Bishop(bool _isWhite) : base(_isWhite, "B") {
             dirs = new Coords[4];
@@ -134,17 +141,9 @@ namespace ChessGame
                 dirs[i + 1] = dirs[i].GetRotate90();
             }
         }
-        public override void Rule(ChessBoard board) {
-            foreach (var bias in dirs) {
-                Coords coord = board.pickUpCoord + bias;
-                while (board.AddTip(coord, this)) {
-                    coord += bias;
-                }
-            }
-        }
     }
 
-    class Knight : ChessPiece
+    class Knight : OneGridChessPiece
     {
         public Knight(bool _isWhite) : base(_isWhite, "N") {
             // Knight's 8 move
@@ -154,12 +153,6 @@ namespace ChessGame
             for (int i = 0; i < 3; i++) {
                 dirs[i + 1] = dirs[i].GetRotate90();
                 dirs[i + 5] = dirs[i + 4].GetRotate90();
-            }
-        }
-
-        public override void Rule(ChessBoard board) {
-            foreach (var bias in dirs) {
-                board.AddTip(board.pickUpCoord + bias, this);
             }
         }
     }
@@ -183,19 +176,21 @@ namespace ChessGame
             ChessPiece? targetChess;
 
             // Forward
-            coord += dirs[0];
-            targetChess = board.currentSituation[coord.row, coord.col];
-            if (targetChess == null) { // No Chess there
-                board.tipIcon[coord.row, coord.col].Visibility = Visibility.Visible;
-            }
-
-            // Forward, first move
-            bool isFirstMove = board.pickUpCoord.row == 1 && !isWhite || board.pickUpCoord.row == 6 && isWhite;
-            if (isFirstMove) {
-                coord += dirs[0];
+            coord += dirs[0]; // Move one grid
+            if (!board.IsOutOfBound(coord)) {
                 targetChess = board.currentSituation[coord.row, coord.col];
                 if (targetChess == null) { // No Chess there
                     board.tipIcon[coord.row, coord.col].Visibility = Visibility.Visible;
+
+                    // Forward, the first move can go one more grid
+                    bool isFirstMove = board.pickUpCoord.row == 1 && !isWhite || board.pickUpCoord.row == 6 && isWhite; // white or black pawn is in the initial position
+                    if (isFirstMove) {
+                        coord += dirs[0]; // Move one more grid
+                        targetChess = board.currentSituation[coord.row, coord.col];
+                        if (targetChess == null) { // No Chess there
+                            board.tipIcon[coord.row, coord.col].Visibility = Visibility.Visible;
+                        }
+                    }
                 }
             }
 
@@ -211,6 +206,7 @@ namespace ChessGame
                 }
             }
 
+            // En passant
         }
     }
 }

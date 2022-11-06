@@ -145,12 +145,10 @@ namespace ChessGame
                         tipIcon[coord.row, coord.col].Visibility = Visibility.Visible;
                         tipIcon[coord.row, coord.col].Background = Brushes.Red;
                     }
-
-                    return false;
                 }
             }
 
-            return false; // Out of bound or Is chess there
+            return false; // Out of bound or is chess there
         }
 
         public bool isValidMove() {

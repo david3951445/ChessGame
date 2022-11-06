@@ -16,6 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Diagnostics;
 using System.Xml.Linq;
+using System.ComponentModel;
 
 
 namespace ChessGame
@@ -30,7 +31,6 @@ namespace ChessGame
             this.board = new ChessBoard(gridBoard);
             InitializeBoard();
             this.history = new History();
-
         }
 
         ChessBoard board;
@@ -84,7 +84,8 @@ namespace ChessGame
             ChessPiece? chess = board.currentSituation[c.row, c.col]; // Chess in current coordinates
 
             if (chess != null) { // Mouse hit the chess
-                Debug.WriteLine("Pick up the chess");
+                //Debug.WriteLine("Pick up the chess");
+
                 // Record the chess
                 history.tempMiddleMove += $"{chess.name}{(char)('a' + c.col)}{(char)('0' + 8 - c.row)}";
                 board.pickUpCoord = c;
@@ -145,7 +146,12 @@ namespace ChessGame
                     history.tempMiddleMove += $"{name}{(char)('a' + c.col)}{(char)('0' + 8 - c.row)}";
                     historyTextBox.Text += history.tempMiddleMove + "  "; // Show it on UI
 
-                    PutDown(c); // Put back to board
+                    // Put back to board
+                    if (board.holdChess is Pawn && c.row == 7 && !board.holdChess.isWhite || c.row == 0 && board.holdChess.isWhite) { // Promotion
+                        Debug.WriteLine("Promotion");
+                    }
+                    PutDown(c); 
+
                     board.isWhiteTurn = !board.isWhiteTurn; // Switch opponent 
                 }
                 else {

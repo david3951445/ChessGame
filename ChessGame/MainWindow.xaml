@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ChessGame"
         mc:Ignorable="d"
-        Title="MainWindow" SizeToContent="WidthAndHeight">
+        Title="MainWindow"
+        SizeToContent="WidthAndHeight"
+        WindowStartupLocation="CenterScreen">
     <Grid x:Name="UI" HorizontalAlignment="Left" VerticalAlignment="Top">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="800"/>
