@@ -17,7 +17,7 @@ using System.Windows.Shapes;
 using System.Diagnostics;
 using System.Xml.Linq;
 using System.ComponentModel;
-
+using ChessGame.ChessPieces;
 
 namespace ChessGame
 {

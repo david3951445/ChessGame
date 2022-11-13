@@ -12,7 +12,7 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using System.Diagnostics;
 using System.ComponentModel;
-
+using ChessGame.ChessPieces;
 
 namespace ChessGame
 {
@@ -25,13 +25,13 @@ namespace ChessGame
             //Add(new Coords(0, 4), new Knight(true));
             //Add(new Coords(7, 4), new King(false));
             InitializeTipIcon();
-            InitializeCurrentSituation();
+            InitializeChessesPosition();
         }
 
         private const int SIZE = 8; // Number of grids on a side
         public bool isWhiteTurn = true;
         //public bool isHoldingChess = false;
-        public Grid grid; // Corresponding grid item in MainWindow
+        public Grid grid; // Corresponding grid item of board in MainWindow
         public TextBlock[,] tipIcon = new TextBlock[SIZE, SIZE]; // The tips when moving the chess
         public Coords pickUpCoord; // Current Coordinates when mouse pick up a chess
         public ChessPiece?[,] currentSituation; // Current game situation of the board
@@ -61,8 +61,7 @@ namespace ChessGame
             t.Visibility = Visibility.Hidden;
         }
 
-        private void InitializeCurrentSituation() {
-
+        private void InitializeChessesPosition() { // Initialize the chesses position
             bool isWhite = true;
             Add(new Coords(7, 0), new Rook(isWhite));
             Add(new Coords(7, 1), new Knight(isWhite));

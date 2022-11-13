@@ -13,4 +13,8 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="ChessPieces\Class1.cs" />
+  </ItemGroup>
+
 </Project>
