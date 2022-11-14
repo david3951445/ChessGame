@@ -22,6 +22,7 @@ namespace ChessGame.ChessPieces
         public King(bool _isWhite) : base(_isWhite, "K") {
             dirs = Dir.King();
         }
+        protected override Coords[] dirs { get; init; }
 
         public override void Rule(ChessBoard board) {
             base.Rule(board);
@@ -35,5 +36,7 @@ namespace ChessGame.ChessPieces
         public Knight(bool _isWhite) : base(_isWhite, "N") {
             dirs = Dir.Knight();
         }
+        protected override Coords[] dirs { get; init; }
+
     }
 }

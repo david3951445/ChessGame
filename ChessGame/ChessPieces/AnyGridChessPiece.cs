@@ -19,11 +19,13 @@ namespace ChessGame.ChessPieces
             }
         }
     }
+
     class Queen : AnyGridChessPiece
     {
         public Queen(bool _isWhite) : base(_isWhite, "Q") {
             dirs = Dir.King();
         }
+        protected override Coords[] dirs { get; init; }
     }
 
     class Rook : AnyGridChessPiece
@@ -31,6 +33,7 @@ namespace ChessGame.ChessPieces
         public Rook(bool _isWhite) : base(_isWhite, "R") {
             dirs = Dir.Rook();
         }
+        protected override Coords[] dirs { get; init; }
     }
 
     class Bishop : AnyGridChessPiece
@@ -38,5 +41,6 @@ namespace ChessGame.ChessPieces
         public Bishop(bool _isWhite) : base(_isWhite, "B") {
             dirs = Dir.Bishop();
         }
+        protected override Coords[] dirs { get; init; }
     }
 }
