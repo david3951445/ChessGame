@@ -24,6 +24,7 @@ namespace ChessGame.ChessPieces
 
         protected override Coords[] dirs { get; init; }
 
+
         public override void Rule(ChessBoard board) {
             Coords coord = board.pickUpCoord;
             ChessPiece? targetChess;

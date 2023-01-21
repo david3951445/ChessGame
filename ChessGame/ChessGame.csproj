@@ -17,4 +17,10 @@
     <Compile Remove="ChessPieces\Class1.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="sound\ChessDrop.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

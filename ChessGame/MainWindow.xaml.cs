@@ -18,6 +18,7 @@ using System.Diagnostics;
 using System.Xml.Linq;
 using System.ComponentModel;
 using ChessGame.ChessPieces;
+using System.Media;
 
 namespace ChessGame
 {
@@ -61,6 +62,7 @@ namespace ChessGame
 
             UI.Children.Remove(board.holdChess.image); // Remove from air  
             board.Add(c, board.holdChess); // Add to board
+            SoundManager.ChessPutDown();
             board.holdChess = null;
         }
         private void RemoveEatenChessFromBoard(ChessPiece chess) {
@@ -146,10 +148,10 @@ namespace ChessGame
                     history.tempMiddleMove += $"{name}{(char)('a' + c.col)}{(char)('0' + 8 - c.row)}";
                     historyTextBox.Text += history.tempMiddleMove + "  "; // Show it on UI
 
-                    // Put back to board
                     if (board.holdChess is Pawn && c.row == 7 && !board.holdChess.isWhite || c.row == 0 && board.holdChess.isWhite) { // Promotion
                         Debug.WriteLine("Promotion");
                     }
+                    // Put down to board
                     PutDown(c); 
 
                     board.isWhiteTurn = !board.isWhiteTurn; // Switch opponent 
