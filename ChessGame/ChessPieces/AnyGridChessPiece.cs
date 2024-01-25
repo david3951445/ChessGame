@@ -8,39 +8,43 @@ namespace ChessGame.ChessPieces
 {
     abstract class AnyGridChessPiece : ChessPiece // Can move any number of grids. ex. Queen, Rook. Bishop 
     {
-        protected AnyGridChessPiece(bool _isWhite, string _name) : base(_isWhite, _name) { }
+        protected AnyGridChessPiece(bool isWhite, string name) : base(isWhite, name) { }
 
-        public override void Rule(ChessBoard board) {
-            foreach (var bias in dirs) {
-                Coords coord = board.pickUpCoord + bias;
-                while (board.AddTip(coord, this)) {
+        public override void Rule(ChessBoard board)
+        {
+            foreach (var bias in Directions)
+            {
+                Coord coord = board.pickUpCoord + bias;
+                while (board.AddTip(coord, this))
                     coord += bias;
-                }
             }
         }
     }
 
     class Queen : AnyGridChessPiece
     {
-        public Queen(bool _isWhite) : base(_isWhite, "Q") {
-            dirs = Dir.King();
+        public Queen(bool isWhite) : base(isWhite, "Q")
+        {
+            Directions = Dir.King();
         }
-        protected override Coords[] dirs { get; init; }
+        protected override Coord[] Directions { get; }
     }
 
     class Rook : AnyGridChessPiece
     {
-        public Rook(bool _isWhite) : base(_isWhite, "R") {
-            dirs = Dir.Rook();
+        public Rook(bool isWhite) : base(isWhite, "R")
+        {
+            Directions = Dir.Rook();
         }
-        protected override Coords[] dirs { get; init; }
+        protected override Coord[] Directions { get; }
     }
 
     class Bishop : AnyGridChessPiece
     {
-        public Bishop(bool _isWhite) : base(_isWhite, "B") {
-            dirs = Dir.Bishop();
+        public Bishop(bool isWhite) : base(isWhite, "B")
+        {
+            Directions = Dir.Bishop();
         }
-        protected override Coords[] dirs { get; init; }
+        protected override Coord[] Directions { get; }
     }
 }

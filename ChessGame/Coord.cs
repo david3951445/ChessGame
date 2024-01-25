@@ -13,22 +13,22 @@ namespace ChessGame
     /// 
     /// That is, the index of Grid object.
     /// </summary>
-    public struct Coords
+    public struct Coord
     {
         public int row;
         public int col;
 
-        public Coords(int _X, int _Y) {
+        public Coord(int _X, int _Y)
+        {
             row = _X;
             col = _Y;
         }
 
         public override string ToString() => $"({row}, {col})";
-        public static Coords operator +(Coords a, Coords b) => new Coords(a.row + b.row, a.col + b.col);
-        public Coords GetRotate90() { // Get new coordinates that rotate itself 90
-            return new Coords(-col, row);
-        }
+        public static Coord operator +(Coord a, Coord b) => new Coord(a.row + b.row, a.col + b.col);
+        /// <summary>
+        /// Get new coordinates that rotate itself 90
+        /// </summary>
+        public Coord GetRotate90() => new Coord(-col, row);
     }
-
-
 }

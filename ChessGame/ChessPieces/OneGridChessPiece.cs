@@ -10,8 +10,10 @@ namespace ChessGame.ChessPieces
     {
         protected OneGridChessPiece(bool _isWhite, string _name) : base(_isWhite, _name) { }
 
-        public override void Rule(ChessBoard board) {
-            foreach (var bias in dirs) {
+        public override void Rule(ChessBoard board)
+        {
+            foreach (var bias in Directions)
+            {
                 board.AddTip(board.pickUpCoord + bias, this);
             }
         }
@@ -19,12 +21,14 @@ namespace ChessGame.ChessPieces
 
     class King : OneGridChessPiece
     {
-        public King(bool _isWhite) : base(_isWhite, "K") {
-            dirs = Dir.King();
+        public King(bool _isWhite) : base(_isWhite, "K")
+        {
+            Directions = Dir.King();
         }
-        protected override Coords[] dirs { get; init; }
+        protected override Coord[] Directions { get; }
 
-        public override void Rule(ChessBoard board) {
+        public override void Rule(ChessBoard board)
+        {
             base.Rule(board);
 
             // Castling
@@ -33,10 +37,11 @@ namespace ChessGame.ChessPieces
 
     class Knight : OneGridChessPiece
     {
-        public Knight(bool _isWhite) : base(_isWhite, "N") {
-            dirs = Dir.Knight();
+        public Knight(bool _isWhite) : base(_isWhite, "N")
+        {
+            Directions = Dir.Knight();
         }
-        protected override Coords[] dirs { get; init; }
+        protected override Coord[] Directions { get; }
 
     }
 }

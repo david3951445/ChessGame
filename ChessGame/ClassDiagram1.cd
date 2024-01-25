@@ -1,103 +1,124 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="ChessGame.ChessPieces.AnyGridChessPiece">
+    <Position X="8.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ChessPieces\AnyGridChessPiece.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ChessGame.ChessPieces.Queen">
+    <Position X="6.25" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ChessPieces\AnyGridChessPiece.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ChessGame.ChessPieces.Rook">
+    <Position X="8.5" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ChessPieces\AnyGridChessPiece.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ChessGame.ChessPieces.Bishop">
+    <Position X="10.75" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ChessPieces\AnyGridChessPiece.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ChessGame.ChessPieces.ChessPiece">
+    <Position X="12" Y="1" Width="1.5" />
+    <NestedTypes>
+      <Class Name="ChessGame.ChessPieces.ChessPiece.Dir" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>ChessPieces\ChessPiece.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AEAAAAAAGEAAAAAQAIAAAAAAEAAEAAAAAAAAgAAAAAA=</HashCode>
+      <FileName>ChessPieces\ChessPiece.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ChessGame.ChessPieces.OneGridChessPiece">
+    <Position X="16.25" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ChessPieces\OneGridChessPiece.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ChessGame.ChessPieces.King">
+    <Position X="15.25" Y="8.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ChessPieces\OneGridChessPiece.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ChessGame.ChessPieces.Knight">
+    <Position X="17.5" Y="8.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ChessPieces\OneGridChessPiece.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ChessGame.ChessPieces.Pawn">
+    <Position X="13" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ChessPieces\Pawn.cs</FileName>
+    </TypeIdentifier>
+  </Class>
   <Class Name="ChessGame.App" Collapsed="true">
-    <Position X="27.25" Y="1.25" Width="1.5" />
+    <Position X="20.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>App.xaml.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="ChessGame.ChessBoard" Collapsed="true">
-    <Position X="29" Y="1.25" Width="1.5" />
+    <Position X="22" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>QBIBAAABACIABAAAAgAEAIAAAAAAAoAAAAADAAAAAgA=</HashCode>
+      <HashCode>QBIBAAABACIAAAAAAgAEAIAAAAAAAoAAAAADAAAAAkA=</HashCode>
       <FileName>ChessBoard.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="ChessGame.ChessPiece" Collapsed="true">
-    <Position X="19" Y="1.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AEAAAAAAGEAAAAAQAIAAAAAAEAAEAAAAAAAAgAAAAAA=</HashCode>
-      <FileName>ChessPiece.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="ChessGame.AnyGridChessPiece" Collapsed="true">
-    <Position X="22.5" Y="2.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>ChessPiece.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="ChessGame.OneGridChessPiece" Collapsed="true">
-    <Position X="14.5" Y="2.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>ChessPiece.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="ChessGame.King" Collapsed="true">
-    <Position X="13.5" Y="4" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>ChessPiece.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="ChessGame.Queen" Collapsed="true">
-    <Position X="22.5" Y="4" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>ChessPiece.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="ChessGame.Rook" Collapsed="true">
-    <Position X="24.75" Y="4" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>ChessPiece.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="ChessGame.Bishop" Collapsed="true">
-    <Position X="20.25" Y="4" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>ChessPiece.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="ChessGame.Knight" Collapsed="true">
-    <Position X="15.75" Y="4" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>ChessPiece.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="ChessGame.Pawn" Collapsed="true">
-    <Position X="18" Y="2.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>ChessPiece.cs</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="ChessGame.History" Collapsed="true">
-    <Position X="27.25" Y="2.25" Width="1.5" />
+    <Position X="23.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAABAiCAAIAAAACAAAAAAAAAAAoBAhAAAAAAAAAAAgA=</HashCode>
       <FileName>History.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="ChessGame.MainWindow" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="29" Y="2.25" Width="1.5" />
+    <Position X="20.25" Y="1.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>QAAAQAAIAQAIEgAAAAQCQAAAABAAAAAAMAAAAAABAgA=</HashCode>
       <FileName>MainWindow.xaml.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Struct Name="ChessGame.Coords" Collapsed="true">
-    <Position X="27.25" Y="3.5" Width="1.5" />
+  <Class Name="ChessGame.SoundManager" Collapsed="true">
+    <Position X="22" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SoundManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="ChessGame.Coords">
+    <Position X="20.25" Y="3.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAIAAAAAEQAAAAQACAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Customize.cs</FileName>
     </TypeIdentifier>
   </Struct>
+  <Enum Name="ChessPieceType">
+    <Position X="22" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAAAAAEggAAAAEIAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ChessPieces\ChessPieceType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
   <Font Name="Microsoft JhengHei UI" Size="9" />
 </ClassDiagram>

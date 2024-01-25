@@ -10,38 +10,45 @@ namespace ChessGame.ChessPieces
 {
     class Pawn : ChessPiece
     {
-        public Pawn(bool _isWhite) : base(_isWhite, "P") {
+        public Pawn(bool _isWhite) : base(_isWhite, "P")
+        {
             // White pawn
-            dirs = new Coords[] {
-                new Coords(-1, 0),
-                new Coords(-1, -1),
-                new Coords(-1, 1),
+            Directions = new Coord[] {
+                new Coord(-1, 0),
+                new Coord(-1, -1),
+                new Coord(-1, 1),
             };
-            if (!isWhite) { // Black pawn move down
-                dirs[0].row = dirs[1].row = dirs[2].row = 1;
+            if (!IsWhite)
+            { // Black pawn move down
+                Directions[0].row = Directions[1].row = Directions[2].row = 1;
             }
         }
 
-        protected override Coords[] dirs { get; init; }
+        protected override Coord[] Directions { get; }
 
 
-        public override void Rule(ChessBoard board) {
-            Coords coord = board.pickUpCoord;
+        public override void Rule(ChessBoard board)
+        {
+            Coord coord = board.pickUpCoord;
             ChessPiece? targetChess;
 
             // Forward
-            coord += dirs[0]; // Move one grid
-            if (!board.IsOutOfBound(coord)) {
+            coord += Directions[0]; // Move one grid
+            if (!board.IsOutOfBound(coord))
+            {
                 targetChess = board.currentSituation[coord.row, coord.col];
-                if (targetChess == null) { // No Chess there
+                if (targetChess == null)
+                { // No Chess there
                     board.tipIcon[coord.row, coord.col].Visibility = Visibility.Visible;
 
                     // Forward, the first move can go one more grid
-                    bool isFirstMove = board.pickUpCoord.row == 1 && !isWhite || board.pickUpCoord.row == 6 && isWhite; // white or black pawn is in the initial position
-                    if (isFirstMove) {
-                        coord += dirs[0]; // Move one more grid
+                    bool isFirstMove = board.pickUpCoord.row == 1 && !IsWhite || board.pickUpCoord.row == 6 && IsWhite; // white or black pawn is in the initial position
+                    if (isFirstMove)
+                    {
+                        coord += Directions[0]; // Move one more grid
                         targetChess = board.currentSituation[coord.row, coord.col];
-                        if (targetChess == null) { // No Chess there
+                        if (targetChess == null)
+                        { // No Chess there
                             board.tipIcon[coord.row, coord.col].Visibility = Visibility.Visible;
                         }
                     }
@@ -49,11 +56,14 @@ namespace ChessGame.ChessPieces
             }
 
             // Both sides
-            for (int i = 1; i < 3; i++) {
-                coord = board.pickUpCoord + dirs[i];
-                if (!board.IsOutOfBound(coord)) {
+            for (int i = 1; i < 3; i++)
+            {
+                coord = board.pickUpCoord + Directions[i];
+                if (!board.IsOutOfBound(coord))
+                {
                     targetChess = board.currentSituation[coord.row, coord.col];
-                    if (targetChess != null && !IsSameColor(targetChess)) { // Is Chess there && Different color chess there
+                    if (targetChess != null && !IsSameColor(targetChess))
+                    { // Is Chess there && Different color chess there
                         board.tipIcon[coord.row, coord.col].Visibility = Visibility.Visible;
                         board.tipIcon[coord.row, coord.col].Background = Brushes.Red;
                     }

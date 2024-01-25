@@ -19,76 +19,73 @@ namespace ChessGame.ChessPieces
 {
     abstract class ChessPiece
     {
-        protected ChessPiece(bool _isWhite, string _name) {
-            size = 100;
-            isWhite = _isWhite;
-            image = new Image() {
+        public static double Size; // image size
+
+        public string? Name { get; } // Abbreviation name
+        public bool IsWhite { get; } // White or black
+        public Image Image { get; } // Image of chess
+        protected abstract Coord[] Directions { get; } // Directions of move
+
+        protected ChessPiece(bool isWhite, string name)
+        {
+            Size = 100;
+            IsWhite = isWhite;
+            Image = new Image()
+            {
                 //Stretch = Stretch.Fill,
-                Width = size,
-                Height = size,
+                Width = Size,
+                Height = Size,
                 HorizontalAlignment = HorizontalAlignment.Left,
                 VerticalAlignment = VerticalAlignment.Top,
             };
-            name = _name;
+            Name = name;
             SetImageSource();
         }
 
-        public static double size; // image size
-        public readonly bool isWhite; // White or black
-        public Image image; // Image of chess
-        public readonly string? name; // Abbreviation name
 
-        protected abstract Coords[] dirs { get; init; } // Directions of move
-
-        private void SetImageSource() {
-            string fileName;
-            if (isWhite) {
-                fileName = $"img/w{name}.png"; // White
-            }
-            else {
-                fileName = $"img/b{name}.png"; // Black
-            }
-            BitmapImage bitmap = new BitmapImage();
+        private void SetImageSource()
+        {
+            string fileName = IsWhite ? $"img/w{Name}.png" : $"img/b{Name}.png";
+            var bitmap = new BitmapImage();
             bitmap.BeginInit();
             bitmap.UriSource = new Uri(fileName, UriKind.Relative);
             bitmap.EndInit();
-            image.Source = bitmap;
+            Image.Source = bitmap;
         }
-        public bool IsSameColor(ChessPiece chess) {
-            return !(isWhite ^ chess.isWhite);
-        }
-        public void FollowMousePosition(Point mousePosition) {
-            image.Margin = new Thickness(mousePosition.X - size / 2, mousePosition.Y - size / 2, 0, 0);
-        }
+
+        public bool IsSameColor(ChessPiece chess) => IsWhite == chess.IsWhite;
+
+        public void FollowMousePosition(Point mousePosition) => Image.Margin = new Thickness(mousePosition.X - Size / 2, mousePosition.Y - Size / 2, 0, 0);
 
 
         public abstract void Rule(ChessBoard board); // Find the valid move
 
         protected static class Dir
         {
-            public static Coords[] Rook() { // Plus
-                return AllDirectios(new Coords(0, 1));
-            }
-            public static Coords[] Bishop() { // X
-                return AllDirectios(new Coords(1, 1));
-            }
-            public static Coords[] King() { // Star
-                return Rook().Union(Bishop()).ToArray(); // Plus + X = Star
-            }
-            public static Coords[] Knight() {
-                return AllDirectios(new Coords(1, 2)).Union(AllDirectios(new Coords(2, 1))).ToArray();
-            }
+            /// <summary>
+            /// Plus
+            /// </summary>
+            public static Coord[] Rook() => FourDirectios(new Coord(0, 1));
+            /// <summary>
+            /// X
+            /// </summary>
+            public static Coord[] Bishop() => FourDirectios(new Coord(1, 1));
+            /// <summary>
+            /// Start
+            /// </summary>
+            public static Coord[] King() => Rook().Union(Bishop()).ToArray(); // Plus + X = Star
+            public static Coord[] Knight() => FourDirectios(new Coord(1, 2)).Union(FourDirectios(new Coord(2, 1))).ToArray();
             // Here other directions can be defined to generate self-created chess pieces
             // private static Coords[] CustomDir1() {
             //      ...
             // }
 
-            private static Coords[] AllDirectios(Coords c) { // All directions with a ninety-degree angle
-                Coords[] dirs = new Coords[4];
+            private static Coord[] FourDirectios(Coord c)
+            { // All directions with a ninety-degree angle
+                Coord[] dirs = new Coord[4];
                 dirs[0] = c;
-                for (int i = 0; i < 3; i++) {
+                for (int i = 0; i < 3; i++)
                     dirs[i + 1] = dirs[i].GetRotate90();
-                }
                 return dirs;
             }
         }

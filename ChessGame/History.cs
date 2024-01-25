@@ -13,7 +13,8 @@ namespace ChessGame
     /// </summary>
     internal class History
     {
-        public History() {
+        public History()
+        {
 
         }
 
@@ -22,18 +23,22 @@ namespace ChessGame
         private Stack<string> strEatenChess = new Stack<string>(); // Store the eaten chesses (string form)
         public Stack<ChessPiece> eatenChess = new Stack<ChessPiece>(); // Store the eaten chesses
         public List<string> list = new List<string>(); // History, use the standard record method. (ex. R3xd7, O-O)
-        public List<Coords> history = new List<Coords>(); // Record the coord of board, for testing
+        public List<Coord> history = new List<Coord>(); // Record the coord of board, for testing
 
-        public void FirstMove() {
-
-        }
-        public void PreviousMove() {
+        public void FirstMove()
+        {
 
         }
-        public void NextMove() {
+        public void PreviousMove()
+        {
 
         }
-        public void LastMove() {
+        public void NextMove()
+        {
+
+        }
+        public void LastMove()
+        {
 
         }
         /// <summary>
@@ -62,13 +67,14 @@ namespace ChessGame
         /// 
         /// </summary>
         /// <param name="board"></param>
-        private void Move(ChessBoard board) { // 
+        private void Move(ChessBoard board)
+        { // 
             //string oneMove = list[currentIndex];
             string oneMove = "R4xd4";
         }
-        private void FindBeginPosition() {
+        private void FindBeginPosition()
+        {
 
         }
-
     }
 }

@@ -46,11 +46,11 @@ namespace ChessGame
             }
         }
         private void AddEventToChess(ChessPiece chess) {
-            chess.image.MouseLeftButtonDown += Image_MouseLeftButtonDown;
-            chess.image.MouseMove += Image_MouseMove;
-            chess.image.MouseLeftButtonUp += Image_MouseLeftButtonUp;
+            chess.Image.MouseLeftButtonDown += Image_MouseLeftButtonDown;
+            chess.Image.MouseMove += Image_MouseMove;
+            chess.Image.MouseLeftButtonUp += Image_MouseLeftButtonUp;
         }
-        private void PutDown(Coords c) { // Put chess back to the coord
+        private void PutDown(Coord c) { // Put chess back to the coord
             history.tempMiddleMove = string.Empty; // Reset temp of middle move expression
 
             // Reset tip icons
@@ -60,49 +60,49 @@ namespace ChessGame
                 }
             }
 
-            UI.Children.Remove(board.holdChess.image); // Remove from air  
+            UI.Children.Remove(board.holdChess.Image); // Remove from air  
             board.Add(c, board.holdChess); // Add to board
             SoundManager.ChessPutDown();
             board.holdChess = null;
         }
         private void RemoveEatenChessFromBoard(ChessPiece chess) {
             StackPanel eatenChess = whiteEatenChess;
-            if (chess.isWhite) {
+            if (chess.IsWhite) {
                 eatenChess = blackEatenChess;
             }
 
-            gridBoard.Children.Remove(chess.image); // Remove from board
+            gridBoard.Children.Remove(chess.Image); // Remove from board
             history.eatenChess.Push(chess); // Store the chess
-            eatenChess.Children.Add(chess.image); // Show eaten chess on the stack panel
-            chess.image.Width = eatenChess.Height; // Match the size of stack panel
-            chess.image.Height = eatenChess.Height; // Match the size of stack panel
+            eatenChess.Children.Add(chess.Image); // Show eaten chess on the stack panel
+            chess.Image.Width = eatenChess.Height; // Match the size of stack panel
+            chess.Image.Height = eatenChess.Height; // Match the size of stack panel
         }
 
         // Event handler
 
         private void Image_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
             Point mousePosition = e.GetPosition(UI); // Mouse position
-            Coords c = board.GetPosition(mousePosition); // Current coordinates
+            Coord c = board.GetPosition(mousePosition); // Current coordinates
             ChessPiece? chess = board.currentSituation[c.row, c.col]; // Chess in current coordinates
 
             if (chess != null) { // Mouse hit the chess
                 //Debug.WriteLine("Pick up the chess");
 
                 // Record the chess
-                history.tempMiddleMove += $"{chess.name}{(char)('a' + c.col)}{(char)('0' + 8 - c.row)}";
+                history.tempMiddleMove += $"{chess.Name}{(char)('a' + c.col)}{(char)('0' + 8 - c.row)}";
                 board.pickUpCoord = c;
 
                 // Find and show the valid move on board
                 chess.Rule(board);
 
                 // Remove chess image from board
-                gridBoard.Children.Remove(chess.image);
+                gridBoard.Children.Remove(chess.Image);
                 board.currentSituation[c.row, c.col] = null;
 
                 // Add chess image to "air"
-                UI.Children.Add(chess.image);
-                Grid.SetRow(chess.image, 0);
-                Grid.SetColumn(chess.image, 0);
+                UI.Children.Add(chess.Image);
+                Grid.SetRow(chess.Image, 0);
+                Grid.SetColumn(chess.Image, 0);
                 chess.FollowMousePosition(mousePosition);
                 board.holdChess = chess;
             }
@@ -124,19 +124,19 @@ namespace ChessGame
         }
         private void Image_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
             Point mousePosition = e.GetPosition(UI);
-            Coords c = board.GetPosition(mousePosition); // Current coordinates
+            Coord c = board.GetPosition(mousePosition); // Current coordinates
             ChessPiece? chess = board.currentSituation[c.row, c.col]; // Chess in current coordinates
 
             if (board.holdChess != null) { // Holding the chess
                 // Judgment when putting down chess
                 TextBlock goalGrid = board.tipIcon[c.row, c.col];
-                if ((goalGrid.Visibility == Visibility.Visible) && !(board.holdChess.isWhite ^ board.isWhiteTurn)) { // Valid move
+                if ((goalGrid.Visibility == Visibility.Visible) && !(board.holdChess.IsWhite ^ board.isWhiteTurn)) { // Valid move
                     string name;
                     if (goalGrid.Background == Brushes.Black) { // Non-eat move
                         name = "E"; // Denote the Empty chess name
                     }
                     else if (goalGrid.Background == Brushes.Red) { // Eat move
-                        name = chess.name; // Eaten chess name
+                        name = chess.Name; // Eaten chess name
 
                         RemoveEatenChessFromBoard(chess); // Remove it from board to eaten chess stackpanel
                     }
@@ -148,7 +148,7 @@ namespace ChessGame
                     history.tempMiddleMove += $"{name}{(char)('a' + c.col)}{(char)('0' + 8 - c.row)}";
                     historyTextBox.Text += history.tempMiddleMove + "  "; // Show it on UI
 
-                    if (board.holdChess is Pawn && c.row == 7 && !board.holdChess.isWhite || c.row == 0 && board.holdChess.isWhite) { // Promotion
+                    if (board.holdChess is Pawn && c.row == 7 && !board.holdChess.IsWhite || c.row == 0 && board.holdChess.IsWhite) { // Promotion
                         Debug.WriteLine("Promotion");
                     }
                     // Put down to board

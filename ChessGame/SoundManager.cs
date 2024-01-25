@@ -10,7 +10,8 @@ namespace ChessGame
 {
     internal static class SoundManager
     {
-        public static void ChessPutDown() {
+        public static void ChessPutDown()
+        {
             var player = new SoundPlayer();
             player.SoundLocation = @".\sound\ChessDrop.wav";
             player.Play();
