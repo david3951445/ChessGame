@@ -10,7 +10,7 @@ namespace ChessGame.ChessPieces
     {
         protected AnyGridChessPiece(bool isWhite, string name) : base(isWhite, name) { }
 
-        public override void Rule(ChessBoard board)
+        public override void AddTipToBoard(ChessBoard board)
         {
             foreach (var bias in Directions)
             {
@@ -29,8 +29,11 @@ namespace ChessGame.ChessPieces
         }
     }
 
-    class Rook : AnyGridChessPiece
+    class Rook : AnyGridChessPiece, ISpecialMovePiece
     {
+        public bool HasMoved { get; set; }
+        public bool IsLeft { get; init; }
+
         public Rook(bool isWhite) : base(isWhite, "R")
         {
             Directions = Dir.Rook();

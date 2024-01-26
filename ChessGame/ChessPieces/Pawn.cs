@@ -24,7 +24,7 @@ namespace ChessGame.ChessPieces
                 Directions[0].Row = Directions[1].Row = Directions[2].Row = 1;
         }
 
-        public override void Rule(ChessBoard board)
+        public override void AddTipToBoard(ChessBoard board)
         {
             Coord coord = board.PickUpCoord;
             ChessPiece? targetChess;

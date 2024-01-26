@@ -58,7 +58,7 @@ namespace ChessGame.ChessPieces
 
         public void FollowMousePosition(Point mousePosition) => Image.Margin = new Thickness(mousePosition.X - Size / 2, mousePosition.Y - Size / 2, 0, 0);
 
-        public abstract void Rule(ChessBoard board); // Find the valid move
+        public abstract void AddTipToBoard(ChessBoard board); // Find the valid move
 
         protected static class Dir
         {
