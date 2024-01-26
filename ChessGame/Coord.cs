@@ -15,20 +15,20 @@ namespace ChessGame
     /// </summary>
     public struct Coord
     {
-        public int row;
-        public int col;
+        public int Row;
+        public int Col;
 
-        public Coord(int _X, int _Y)
+        public Coord(int row, int col)
         {
-            row = _X;
-            col = _Y;
+            Row = row;
+            Col = col;
         }
 
-        public override string ToString() => $"({row}, {col})";
-        public static Coord operator +(Coord a, Coord b) => new Coord(a.row + b.row, a.col + b.col);
+        public override string ToString() => $"({Row}, {Col})";
+        public static Coord operator +(Coord a, Coord b) => new Coord(a.Row + b.Row, a.Col + b.Col);
         /// <summary>
         /// Get new coordinates that rotate itself 90
         /// </summary>
-        public Coord GetRotate90() => new Coord(-col, row);
+        public Coord GetRotate90() => new Coord(-Col, Row);
     }
 }

@@ -16,59 +16,70 @@ using ChessGame.ChessPieces;
 
 namespace ChessGame
 {
+    /*  Coord[,]
+     *    0 1 2 3 4 5 6 7
+     *  0
+     *  1
+     *  2
+     *  3
+     *  4
+     *  5
+     *  6
+     *  7
+     */
     internal class ChessBoard
     {
+        private const int SIZE = 8; // Number of grids on a side
+        public bool IsWhiteTurn = true;
+        //public bool isHoldingChess = false;
+        public TextBlock[,] TipIcon = new TextBlock[SIZE, SIZE]; // The tips when moving the chess
+        public Coord PickUpCoord; // Current Coordinates when mouse pick up a chess
+        public ChessPiece?[,] CurrentSituation; // Current game situation of the board
+        public ChessPiece? HoldChess; // Current holding chess
+        private Grid _grid; // Corresponding grid item of board in MainWindow
+        //public Stack<Coords> eatCoords = new Stack<Coords>(); // The coordinates where you can eat chess
+        //public Stack<Coords> moveCoords = new Stack<Coords>(); // The coordinates where you can move chess
+
         public ChessBoard(Grid _grid)
         {
-            this.grid = _grid;
-            ChessPiece.Size = grid.Width / 8;
-            this.currentSituation = new ChessPiece[SIZE, SIZE];
+            this._grid = _grid;
+            ChessPiece.Size = this._grid.Width / SIZE;
+            this.CurrentSituation = new ChessPiece[SIZE, SIZE];
             //Add(new Coords(0, 4), new Knight(true));
             //Add(new Coords(7, 4), new King(false));
             InitializeTipIcon();
             InitializeChessesPosition();
         }
 
-        private const int SIZE = 8; // Number of grids on a side
-        public bool isWhiteTurn = true;
-        //public bool isHoldingChess = false;
-        public Grid grid; // Corresponding grid item of board in MainWindow
-        public TextBlock[,] tipIcon = new TextBlock[SIZE, SIZE]; // The tips when moving the chess
-        public Coord pickUpCoord; // Current Coordinates when mouse pick up a chess
-        public ChessPiece?[,] currentSituation; // Current game situation of the board
-        public ChessPiece? holdChess; // Current holding chess
-        //public Stack<Coords> eatCoords = new Stack<Coords>(); // The coordinates where you can eat chess
-        //public Stack<Coords> moveCoords = new Stack<Coords>(); // The coordinates where you can move chess
-
         private void InitializeTipIcon()
         {
             // Add tip icon
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < SIZE; i++)
             {
-                for (int j = 0; j < 8; j++)
+                for (int j = 0; j < SIZE; j++)
                 {
-                    tipIcon[i, j] = new TextBlock()
+                    var textBlock = new TextBlock()
                     {
                         TextWrapping = TextWrapping.Wrap,
                         Opacity = 0.5,
-
                     };
-                    resetTipIcon(tipIcon[i, j]);
-                    grid.Children.Add(tipIcon[i, j]);
-                    Grid.SetRow(tipIcon[i, j], i);
-                    Grid.SetColumn(tipIcon[i, j], j);
+                    ResetTipIcon(textBlock);
+                    _grid.Children.Add(textBlock);
+                    Grid.SetRow(textBlock, i);
+                    Grid.SetColumn(textBlock, j);
+                    TipIcon[i, j] = textBlock;
                 }
             }
         }
 
-        public void resetTipIcon(TextBlock t)
+        public void ResetTipIcon(TextBlock t)
         {
             t.Background = Brushes.Black;//"#FF030315"
             t.Visibility = Visibility.Hidden;
         }
 
         private void InitializeChessesPosition()
-        { // Initialize the chesses position
+        {
             bool isWhite = true;
             Add(new Coord(7, 0), new Rook(isWhite));
             Add(new Coord(7, 1), new Knight(isWhite));
@@ -78,10 +89,8 @@ namespace ChessGame
             Add(new Coord(7, 5), new Bishop(isWhite));
             Add(new Coord(7, 6), new Knight(isWhite));
             Add(new Coord(7, 7), new Rook(isWhite));
-            for (int j = 0; j < 8; j++)
-            {
+            for (int j = 0; j < SIZE; j++)
                 Add(new Coord(6, j), new Pawn(isWhite));
-            }
             isWhite = false;
             Add(new Coord(0, 0), new Rook(isWhite));
             Add(new Coord(0, 1), new Knight(isWhite));
@@ -91,7 +100,7 @@ namespace ChessGame
             Add(new Coord(0, 5), new Bishop(isWhite));
             Add(new Coord(0, 6), new Knight(isWhite));
             Add(new Coord(0, 7), new Rook(isWhite));
-            for (int j = 0; j < 8; j++)
+            for (int j = 0; j < SIZE; j++)
             {
                 Add(new Coord(1, j), new Pawn(isWhite));
             }
@@ -102,21 +111,15 @@ namespace ChessGame
         {
             Image img = chess.Image;
             img.Margin = new Thickness(0, 0, 0, 0);
-            grid.Children.Add(img);
-            Grid.SetRow(img, coord.row);
-            Grid.SetColumn(img, coord.col);
-            currentSituation[coord.row, coord.col] = chess;
+            _grid.Children.Add(img);
+            Grid.SetRow(img, coord.Row);
+            Grid.SetColumn(img, coord.Col);
+            CurrentSituation[coord.Row, coord.Col] = chess;
         }
 
-        public bool IsOutOfBound(Point pos)
-        { // With respect to board mouse position
-            return pos.X < 0 || pos.X >= grid.Width || pos.Y < 0 || pos.Y >= grid.Height;
-        }
+        public bool IsOutOfBound(Point mousePos) => mousePos.X < 0 || mousePos.X >= _grid.Width || mousePos.Y < 0 || mousePos.Y >= _grid.Height;
 
-        public bool IsOutOfBound(Coord coord)
-        { // With respect to board coordinate
-            return coord.col < 0 || coord.col >= SIZE || coord.row < 0 || coord.row >= SIZE;
-        }
+        public bool IsOutOfBound(Coord boardCoord) => boardCoord.Col < 0 || boardCoord.Col >= SIZE || boardCoord.Row < 0 || boardCoord.Row >= SIZE;
 
         /// <summary>
         /// Set the position of the mouse cursor on the chessboard coordinates
@@ -124,8 +127,8 @@ namespace ChessGame
         /// <param name="mousePosition"> Relative to the top left corner of board </param>
         public void SetPosition(Point mousePosition)
         {
-            pickUpCoord.row = (int)(mousePosition.Y / ChessPiece.Size); // Row index;
-            pickUpCoord.col = (int)(mousePosition.X / ChessPiece.Size); // Column index
+            PickUpCoord.Row = (int)(mousePosition.Y / ChessPiece.Size); // Row index;
+            PickUpCoord.Col = (int)(mousePosition.X / ChessPiece.Size); // Column index
         }
 
         /// <summary>
@@ -149,10 +152,10 @@ namespace ChessGame
         {
             if (!IsOutOfBound(coord))
             { // Not out of bound
-                ChessPiece? targetChess = currentSituation[coord.row, coord.col];
+                ChessPiece? targetChess = CurrentSituation[coord.Row, coord.Col];
                 if (targetChess == null)
                 { // No Chess there (Non-eaten)
-                    tipIcon[coord.row, coord.col].Visibility = Visibility.Visible;
+                    TipIcon[coord.Row, coord.Col].Visibility = Visibility.Visible;
 
                     return true;
                 }
@@ -160,8 +163,8 @@ namespace ChessGame
                 { // Is chess there (Eaten)
                     if (!chess.IsSameColor(targetChess))
                     { // Different color chess there
-                        tipIcon[coord.row, coord.col].Visibility = Visibility.Visible;
-                        tipIcon[coord.row, coord.col].Background = Brushes.Red;
+                        TipIcon[coord.Row, coord.Col].Visibility = Visibility.Visible;
+                        TipIcon[coord.Row, coord.Col].Background = Brushes.Red;
                     }
                 }
             }

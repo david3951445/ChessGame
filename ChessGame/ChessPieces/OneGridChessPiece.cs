@@ -6,26 +6,25 @@ using System.Threading.Tasks;
 
 namespace ChessGame.ChessPieces
 {
-    abstract class OneGridChessPiece : ChessPiece //Can move one number of grids. ex. King, Knight
+    abstract class OneGridChessPiece : ChessPiece // Can move one number of grids. ex. King, Knight
     {
-        protected OneGridChessPiece(bool _isWhite, string _name) : base(_isWhite, _name) { }
+        protected OneGridChessPiece(bool isWhite, string name) : base(isWhite, name) { }
 
         public override void Rule(ChessBoard board)
         {
             foreach (var bias in Directions)
             {
-                board.AddTip(board.pickUpCoord + bias, this);
+                board.AddTip(board.PickUpCoord + bias, this);
             }
         }
     }
 
     class King : OneGridChessPiece
     {
-        public King(bool _isWhite) : base(_isWhite, "K")
+        public King(bool isWhite) : base(isWhite, "K")
         {
             Directions = Dir.King();
         }
-        protected override Coord[] Directions { get; }
 
         public override void Rule(ChessBoard board)
         {
@@ -41,7 +40,5 @@ namespace ChessGame.ChessPieces
         {
             Directions = Dir.Knight();
         }
-        protected override Coord[] Directions { get; }
-
     }
 }

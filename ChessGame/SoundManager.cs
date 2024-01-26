@@ -12,8 +12,10 @@ namespace ChessGame
     {
         public static void ChessPutDown()
         {
-            var player = new SoundPlayer();
-            player.SoundLocation = @".\sound\ChessDrop.wav";
+            var player = new SoundPlayer
+            {
+                SoundLocation = @".\sound\ChessDrop.wav"
+            };
             player.Play();
         }
     }

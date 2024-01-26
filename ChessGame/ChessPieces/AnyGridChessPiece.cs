@@ -14,7 +14,7 @@ namespace ChessGame.ChessPieces
         {
             foreach (var bias in Directions)
             {
-                Coord coord = board.pickUpCoord + bias;
+                Coord coord = board.PickUpCoord + bias;
                 while (board.AddTip(coord, this))
                     coord += bias;
             }
@@ -27,7 +27,6 @@ namespace ChessGame.ChessPieces
         {
             Directions = Dir.King();
         }
-        protected override Coord[] Directions { get; }
     }
 
     class Rook : AnyGridChessPiece
@@ -36,7 +35,6 @@ namespace ChessGame.ChessPieces
         {
             Directions = Dir.Rook();
         }
-        protected override Coord[] Directions { get; }
     }
 
     class Bishop : AnyGridChessPiece
@@ -45,6 +43,5 @@ namespace ChessGame.ChessPieces
         {
             Directions = Dir.Bishop();
         }
-        protected override Coord[] Directions { get; }
     }
 }

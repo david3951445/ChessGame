@@ -19,10 +19,10 @@ namespace ChessGame
         }
 
         private int currentIndex; // Current index of this.list
-        public string tempMiddleMove = String.Empty; // The temporary record in one move. One move: MouseLeftButtonDown() -> MouseMove() -> MouseLeftButtonUp()
+        public string TempMiddleMove = string.Empty; // The temporary record in one move. One move: MouseLeftButtonDown() -> MouseMove() -> MouseLeftButtonUp()
         private Stack<string> strEatenChess = new Stack<string>(); // Store the eaten chesses (string form)
-        public Stack<ChessPiece> eatenChess = new Stack<ChessPiece>(); // Store the eaten chesses
-        public List<string> list = new List<string>(); // History, use the standard record method. (ex. R3xd7, O-O)
+        public Stack<ChessPiece> EatenChess = new Stack<ChessPiece>(); // Store the eaten chesses
+        public List<string> standardRecords = new List<string>(); // History, use the standard record method. (ex. R3xd7, O-O)
         public List<Coord> history = new List<Coord>(); // Record the coord of board, for testing
 
         public void FirstMove()

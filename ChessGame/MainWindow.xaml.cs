@@ -1,188 +1,198 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net.NetworkInformation;
-using System.Security.AccessControl;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Diagnostics;
-using System.Xml.Linq;
-using System.ComponentModel;
 using ChessGame.ChessPieces;
-using System.Media;
 
 namespace ChessGame
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow() {
+        private ChessBoard _board;
+        private History _history;
+
+        public MainWindow()
+        {
             InitializeComponent();
-            this.board = new ChessBoard(gridBoard);
+            _board = new ChessBoard(gridBoard);
             InitializeBoard();
-            this.history = new History();
+            _history = new History();
         }
 
-        ChessBoard board;
-        History history;
-
-        private void InitializeBoard() {
+        private void InitializeBoard()
+        {
             // Add tip icon and chess pieces to board
-            foreach (var item in board.currentSituation) {
-                if (item != null) {
+            foreach (var item in _board.CurrentSituation)
+                if (item != null)
                     AddEventToChess(item);
-                }
-            }
         }
-        private void AddEventToChess(ChessPiece chess) {
+
+        private void AddEventToChess(ChessPiece chess)
+        {
             chess.Image.MouseLeftButtonDown += Image_MouseLeftButtonDown;
             chess.Image.MouseMove += Image_MouseMove;
             chess.Image.MouseLeftButtonUp += Image_MouseLeftButtonUp;
         }
-        private void PutDown(Coord c) { // Put chess back to the coord
-            history.tempMiddleMove = string.Empty; // Reset temp of middle move expression
+
+        /// <summary>
+        /// Put chess back to the coord
+        /// </summary>
+        private void PutDown(Coord c)
+        {
+            _history.TempMiddleMove = string.Empty; // Reset temp of middle move expression
 
             // Reset tip icons
-            foreach (var item in board.tipIcon) {
-                if (item.Visibility == Visibility.Visible) {
-                    board.resetTipIcon(item);
-                }
-            }
+            foreach (var item in _board.TipIcon)
+                if (item.Visibility == Visibility.Visible)
+                    _board.ResetTipIcon(item);
 
-            UI.Children.Remove(board.holdChess.Image); // Remove from air  
-            board.Add(c, board.holdChess); // Add to board
+            UI.Children.Remove(_board.HoldChess.Image); // Remove from air  
+            _board.Add(c, _board.HoldChess); // Add to board
             SoundManager.ChessPutDown();
-            board.holdChess = null;
+            _board.HoldChess = null;
         }
-        private void RemoveEatenChessFromBoard(ChessPiece chess) {
+
+        private void RemoveEatenChessFromBoard(ChessPiece chess)
+        {
             StackPanel eatenChess = whiteEatenChess;
-            if (chess.IsWhite) {
+            if (chess.IsWhite)
                 eatenChess = blackEatenChess;
-            }
 
             gridBoard.Children.Remove(chess.Image); // Remove from board
-            history.eatenChess.Push(chess); // Store the chess
+            _history.EatenChess.Push(chess); // Store the chess
             eatenChess.Children.Add(chess.Image); // Show eaten chess on the stack panel
             chess.Image.Width = eatenChess.Height; // Match the size of stack panel
             chess.Image.Height = eatenChess.Height; // Match the size of stack panel
         }
 
-        // Event handler
+        // Events
 
-        private void Image_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+        private void Image_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
             Point mousePosition = e.GetPosition(UI); // Mouse position
-            Coord c = board.GetPosition(mousePosition); // Current coordinates
-            ChessPiece? chess = board.currentSituation[c.row, c.col]; // Chess in current coordinates
+            Coord c = _board.GetPosition(mousePosition); // Current coordinates
+            ChessPiece? chess = _board.CurrentSituation[c.Row, c.Col]; // Chess in current coordinates
 
-            if (chess != null) { // Mouse hit the chess
+            if (chess != null) // Mouse hit the chess
+            {
                 //Debug.WriteLine("Pick up the chess");
 
                 // Record the chess
-                history.tempMiddleMove += $"{chess.Name}{(char)('a' + c.col)}{(char)('0' + 8 - c.row)}";
-                board.pickUpCoord = c;
+                _history.TempMiddleMove += $"{chess.Name}{(char)('a' + c.Col)}{(char)('0' + 8 - c.Row)}";
+                _board.PickUpCoord = c;
 
                 // Find and show the valid move on board
-                chess.Rule(board);
+                chess.Rule(_board);
 
                 // Remove chess image from board
                 gridBoard.Children.Remove(chess.Image);
-                board.currentSituation[c.row, c.col] = null;
+                _board.CurrentSituation[c.Row, c.Col] = null;
 
                 // Add chess image to "air"
                 UI.Children.Add(chess.Image);
                 Grid.SetRow(chess.Image, 0);
                 Grid.SetColumn(chess.Image, 0);
                 chess.FollowMousePosition(mousePosition);
-                board.holdChess = chess;
+                _board.HoldChess = chess;
             }
-            else {
+            else
+            {
                 // Cancel some effect
                 // ...
             }
         }
-        private void Image_MouseMove(object sender, System.Windows.Input.MouseEventArgs e) {
-            if (board.holdChess != null) { // Holding a chess
-                Point mousePosition = e.GetPosition(UI);
 
-                board.holdChess.FollowMousePosition(mousePosition); // Let chess follow the mouse
+        private void Image_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (_board.HoldChess == null) // Not holding a chess
+                return;
 
-                if (board.IsOutOfBound(mousePosition)) { // Mouse out off bound
-                    PutDown(board.pickUpCoord); // Put back to the previous position
-                }
-            }
-        }
-        private void Image_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
             Point mousePosition = e.GetPosition(UI);
-            Coord c = board.GetPosition(mousePosition); // Current coordinates
-            ChessPiece? chess = board.currentSituation[c.row, c.col]; // Chess in current coordinates
+            _board.HoldChess.FollowMousePosition(mousePosition); // Let chess follow the mouse
+            if (_board.IsOutOfBound(mousePosition))
+                PutDown(_board.PickUpCoord); // Put back to the previous position
+        }
 
-            if (board.holdChess != null) { // Holding the chess
-                // Judgment when putting down chess
-                TextBlock goalGrid = board.tipIcon[c.row, c.col];
-                if ((goalGrid.Visibility == Visibility.Visible) && !(board.holdChess.IsWhite ^ board.isWhiteTurn)) { // Valid move
-                    string name;
-                    if (goalGrid.Background == Brushes.Black) { // Non-eat move
-                        name = "E"; // Denote the Empty chess name
-                    }
-                    else if (goalGrid.Background == Brushes.Red) { // Eat move
-                        name = chess.Name; // Eaten chess name
+        private void Image_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            Point mousePosition = e.GetPosition(UI);
+            Coord coord = _board.GetPosition(mousePosition); // Current coordinates
+            ChessPiece? chess = _board.CurrentSituation[coord.Row, coord.Col]; // Chess in current coordinates
 
-                        RemoveEatenChessFromBoard(chess); // Remove it from board to eaten chess stackpanel
-                    }
-                    else {
-                        throw new Exception("Undefine tip color");
-                    }
+            if (_board.HoldChess == null) // Not holding the chess
+                return;
 
-                    // Record the move
-                    history.tempMiddleMove += $"{name}{(char)('a' + c.col)}{(char)('0' + 8 - c.row)}";
-                    historyTextBox.Text += history.tempMiddleMove + "  "; // Show it on UI
-
-                    if (board.holdChess is Pawn && c.row == 7 && !board.holdChess.IsWhite || c.row == 0 && board.holdChess.IsWhite) { // Promotion
-                        Debug.WriteLine("Promotion");
-                    }
-                    // Put down to board
-                    PutDown(c); 
-
-                    board.isWhiteTurn = !board.isWhiteTurn; // Switch opponent 
-                }
-                else {
-                    PutDown(board.pickUpCoord); // Put back to the previous position
-                }
+            // Judgment when putting down chess
+            TextBlock goalGrid = _board.TipIcon[coord.Row, coord.Col];
+            if (goalGrid.Visibility != Visibility.Visible || _board.HoldChess.IsWhite != _board.IsWhiteTurn)
+            {
+                PutDown(_board.PickUpCoord); // Put back to the previous position
+                return;
             }
+
+            // Valid move
+            string name;
+            if (goalGrid.Background == Brushes.Black)
+            { // Non-eat move
+                name = "E"; // Denote the Empty chess name
+            }
+            else if (goalGrid.Background == Brushes.Red)
+            { // Eat move
+                name = chess.Name; // Eaten chess name
+                RemoveEatenChessFromBoard(chess); // Remove it from board to eaten chess stackpanel
+            }
+            else
+            {
+                throw new Exception("Undefine tip color");
+            }
+
+            // Record the move
+            _history.TempMiddleMove += $"{name}{(char)('a' + coord.Col)}{(char)('0' + 8 - coord.Row)}";
+            historyTextBox.Text += _history.TempMiddleMove + "  "; // Show it on UI
+
+            if (CanPromotion(coord))
+            { 
+                Debug.WriteLine("Promotion");
+                // Promotion ...
+            }
+
+            PutDown(coord);
+
+            _board.IsWhiteTurn = !_board.IsWhiteTurn; // Switch opponent 
         }
 
-        private void ImageBoard_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+        private bool CanPromotion(Coord coord) => _board.HoldChess is Pawn && (coord.Row == 7 && !_board.HoldChess.IsWhite || coord.Row == 0 && _board.HoldChess.IsWhite);
+
+        private void ImageBoard_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
 
         }
 
-        private void imageBoard_MouseMove(object sender, MouseEventArgs e) {
+        private void imageBoard_MouseMove(object sender, MouseEventArgs e)
+        {
             Image_MouseMove(sender, e);
         }
 
-        private void firstButton_Click(object sender, RoutedEventArgs e) {
+        private void firstButton_Click(object sender, RoutedEventArgs e)
+        {
 
         }
 
-        private void previousButton_Click(object sender, RoutedEventArgs e) {
+        private void previousButton_Click(object sender, RoutedEventArgs e)
+        {
 
         }
 
-        private void nextButton_Click(object sender, RoutedEventArgs e) {
+        private void nextButton_Click(object sender, RoutedEventArgs e)
+        {
 
         }
 
-        private void lastButton_Click(object sender, RoutedEventArgs e) {
+        private void lastButton_Click(object sender, RoutedEventArgs e)
+        {
 
         }
     }

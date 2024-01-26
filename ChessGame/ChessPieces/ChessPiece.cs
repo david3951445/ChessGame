@@ -1,22 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows;
-using System.Windows.Input;
-using System.Net.NetworkInformation;
-using System.Diagnostics;
-using System.ComponentModel;
-using System.Runtime.ExceptionServices;
-using System.Xml.Linq;
-using System.DirectoryServices;
 
 namespace ChessGame.ChessPieces
 {
+    enum ChessPieceType
+    {
+        Empty,
+        King,
+        Queen,
+        Rook,
+        Bishop,
+        Knight,
+        Pawn
+    }
+
     abstract class ChessPiece
     {
         public static double Size; // image size
@@ -24,7 +24,7 @@ namespace ChessGame.ChessPieces
         public string? Name { get; } // Abbreviation name
         public bool IsWhite { get; } // White or black
         public Image Image { get; } // Image of chess
-        protected abstract Coord[] Directions { get; } // Directions of move
+        protected Coord[] Directions { get; init; } // Directions of move
 
         protected ChessPiece(bool isWhite, string name)
         {
@@ -39,6 +39,7 @@ namespace ChessGame.ChessPieces
                 VerticalAlignment = VerticalAlignment.Top,
             };
             Name = name;
+            Directions = new Coord[0];
             SetImageSource();
         }
 
@@ -56,7 +57,6 @@ namespace ChessGame.ChessPieces
         public bool IsSameColor(ChessPiece chess) => IsWhite == chess.IsWhite;
 
         public void FollowMousePosition(Point mousePosition) => Image.Margin = new Thickness(mousePosition.X - Size / 2, mousePosition.Y - Size / 2, 0, 0);
-
 
         public abstract void Rule(ChessBoard board); // Find the valid move
 
