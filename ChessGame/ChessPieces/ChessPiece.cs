@@ -6,19 +6,19 @@ using System.Windows;
 
 namespace ChessGame.ChessPieces
 {
-    enum ChessPieceType
-    {
-        Empty,
-        King,
-        Queen,
-        Rook,
-        Bishop,
-        Knight,
-        Pawn
-    }
-
     abstract class ChessPiece
     {
+        public enum Type
+        {
+            Empty,
+            King,
+            Queen,
+            Rook,
+            Bishop,
+            Knight,
+            Pawn
+        }
+
         public static double Size; // image size
 
         public Coord Coord { get; set; }

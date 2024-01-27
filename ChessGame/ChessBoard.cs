@@ -1,17 +1,12 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.NetworkInformation;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Media;
-using System.Diagnostics;
-using System.ComponentModel;
 using ChessGame.ChessPieces;
 
 namespace ChessGame
@@ -32,7 +27,7 @@ namespace ChessGame
         public event EventHandler<ChessMovedEventArgs>? ChessAdded;
         public event EventHandler<ChessMovedEventArgs>? ChessRemoved;
         public event EventHandler<ChessMovedEventArgs>? ChessEaten;
-
+        public event EventHandler<ChessPiece>? ChessCreated;
         //public bool isHoldingChess = false;
         public TextBlock[,] TipIcon = new TextBlock[SIZE, SIZE]; // The tips when moving the chess. Also use to check valid moves.
         public Coord PickUpCoord; // Current Coordinates when mouse pick up a chess
@@ -88,30 +83,46 @@ namespace ChessGame
             CurrentState = new ChessPiece[SIZE, SIZE];
 
             bool isWhite = true;
-            Add(new Coord(7, 0), new Rook(isWhite));
-            Add(new Coord(7, 1), new Knight(isWhite));
-            Add(new Coord(7, 2), new Bishop(isWhite));
-            Add(new Coord(7, 3), new Queen(isWhite));
-            WhiteKing = new King(isWhite);
+            Add(new Coord(7, 0), CreatePiece(ChessPiece.Type.Rook, isWhite));
+            Add(new Coord(7, 1), CreatePiece(ChessPiece.Type.Knight, isWhite));
+            Add(new Coord(7, 2), CreatePiece(ChessPiece.Type.Bishop, isWhite));
+            Add(new Coord(7, 3), CreatePiece(ChessPiece.Type.Queen, isWhite));
+            WhiteKing = (King)CreatePiece(ChessPiece.Type.King, isWhite);
             Add(new Coord(7, 4), WhiteKing);
-            Add(new Coord(7, 5), new Bishop(isWhite));
-            Add(new Coord(7, 6), new Knight(isWhite));
-            Add(new Coord(7, 7), new Rook(isWhite) { IsShortSide = true });
+            Add(new Coord(7, 5), CreatePiece(ChessPiece.Type.Bishop, isWhite));
+            Add(new Coord(7, 6), CreatePiece(ChessPiece.Type.Knight, isWhite));
+            Add(new Coord(7, 7), CreatePiece(ChessPiece.Type.Rook, isWhite, true));
             for (int j = 0; j < SIZE; j++)
-                Add(new Coord(6, j), new Pawn(isWhite));
+                Add(new Coord(6, j), CreatePiece(ChessPiece.Type.Pawn, isWhite));
 
             isWhite = false;
-            Add(new Coord(0, 0), new Rook(isWhite));
-            Add(new Coord(0, 1), new Knight(isWhite));
-            Add(new Coord(0, 2), new Bishop(isWhite));
-            Add(new Coord(0, 3), new Queen(isWhite));
-            BlackKing = new King(isWhite);
+            Add(new Coord(0, 0), CreatePiece(ChessPiece.Type.Rook, isWhite));
+            Add(new Coord(0, 1), CreatePiece(ChessPiece.Type.Knight, isWhite));
+            Add(new Coord(0, 2), CreatePiece(ChessPiece.Type.Bishop, isWhite));
+            Add(new Coord(0, 3), CreatePiece(ChessPiece.Type.Queen, isWhite));
+            BlackKing = (King)CreatePiece(ChessPiece.Type.King, isWhite);
             Add(new Coord(0, 4), BlackKing);
-            Add(new Coord(0, 5), new Bishop(isWhite));
-            Add(new Coord(0, 6), new Knight(isWhite));
-            Add(new Coord(0, 7), new Rook(isWhite) { IsShortSide = true });
+            Add(new Coord(0, 5), CreatePiece(ChessPiece.Type.Bishop, isWhite));
+            Add(new Coord(0, 6), CreatePiece(ChessPiece.Type.Knight, isWhite));
+            Add(new Coord(0, 7), CreatePiece(ChessPiece.Type.Rook, isWhite, true));
             for (int j = 0; j < SIZE; j++)
-                Add(new Coord(1, j), new Pawn(isWhite));
+                Add(new Coord(1, j), CreatePiece(ChessPiece.Type.Pawn, isWhite));
+        }
+
+        public ChessPiece CreatePiece(ChessPiece.Type type, bool isWhite, bool isShortSide = false)
+        {
+            ChessPiece chess = type switch
+            {
+                ChessPiece.Type.Rook => new Rook(isWhite) { IsShortSide = isShortSide },
+                ChessPiece.Type.Knight => new Knight(isWhite),
+                ChessPiece.Type.Bishop => new Bishop(isWhite),
+                ChessPiece.Type.Queen => new Queen(isWhite),
+                ChessPiece.Type.King => new King(isWhite),
+                ChessPiece.Type.Pawn => new Pawn(isWhite),
+                _ => throw new NotImplementedException()
+            };
+            ChessCreated?.Invoke(this, chess);
+            return chess;
         }
 
         public Coord GetRookStartingCoord(bool isWhite, bool isShort)
@@ -146,6 +157,12 @@ namespace ChessGame
         }
 
         public bool IsOutOfBound(Coord boardCoord) => boardCoord.Col < 0 || boardCoord.Col >= SIZE || boardCoord.Row < 0 || boardCoord.Row >= SIZE;
+
+        public void RemoveEatenChessFromBoard(ChessPiece chessToEat)
+        {
+            _history.EatenChess.Push(chessToEat); // Store the chess
+            ChessEaten?.Invoke(this, new ChessMovedEventArgs(chessToEat, chessToEat.Coord));
+        }
 
         /// <summary>
         /// Set the position of the mouse cursor on the chessboard coordinates
@@ -195,7 +212,7 @@ namespace ChessGame
             return false; // Is chess there
         }
 
-        public bool isValidMove()
+        public bool IsValidMove()
         {
             //Debug.WriteLine(holdChess.isWhite);
             //Debug.WriteLine(isWhiteTurn);
@@ -203,15 +220,25 @@ namespace ChessGame
             return true;
         }
 
-        protected virtual void OnChessRemoved(ChessPiece? chess, Coord coord)
+        public void PutDown(ChessPiece chess, Coord endCoord)
         {
-            if (chess == null)
-                return;
-            ChessRemoved?.Invoke(this, new ChessMovedEventArgs(chess, coord));
+            chess = TryPromote(chess);
+            TryCastle(chess, endCoord);
+            Add(endCoord, chess); // Add to board
+            HoldChess = null;
+
+            _history.TempMiddleMove = string.Empty; // Reset temp of middle move expression
+            // Reset tip icons
+            foreach (var item in TipIcon)
+                if (item.Visibility == Visibility.Visible)
+                    ResetTipIcon(item);
         }
 
-        public void TryCastle(King king, Coord endCoord)
+        public bool TryCastle(ChessPiece holdChess, Coord endCoord)
         {
+            if (holdChess is not King king)
+                return false;
+
             if (endCoord == king.Coord + new Coord(0, 2)) // Short castling
             {
                 if (king.IsWhite)
@@ -226,12 +253,24 @@ namespace ChessGame
                 else
                     Move(new Coord(0, 0), new Coord(0, 3));
             }
+
+            return true;
         }
 
-        public void RemoveEatenChessFromBoard(ChessPiece chessToEat)
+        public ChessPiece TryPromote(ChessPiece chessToPromote)
         {
-            _history.EatenChess.Push(chessToEat); // Store the chess
-            ChessEaten?.Invoke(this, new ChessMovedEventArgs(chessToEat, chessToEat.Coord));
+            if (!CanPromotion(chessToPromote))
+                return chessToPromote;
+            return CreatePiece(ChessPiece.Type.Queen, chessToPromote.IsWhite);
+        }
+
+        private static bool CanPromotion(ChessPiece chess) => chess is Pawn && (chess.Coord.Row == 6 && !chess.IsWhite || chess.Coord.Row == 1 && chess.IsWhite);
+
+        protected virtual void OnChessRemoved(ChessPiece? chess, Coord coord)
+        {
+            if (chess == null)
+                return;
+            ChessRemoved?.Invoke(this, new ChessMovedEventArgs(chess, coord));
         }
     }
 

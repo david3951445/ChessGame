@@ -38,6 +38,7 @@ namespace ChessGame
             _board.ChessAdded += Board_ChessAdded;
             _board.ChessRemoved += Board_ChessRemoved;
             _board.ChessEaten += Board_ChessEaten;
+            _board.ChessCreated += Board_ChessCreated;
             StartNewGame();
         }
 
@@ -68,7 +69,7 @@ namespace ChessGame
             chess.Image.Height = stackPanel.Height; // Match the size of stack panel
         }
 
-        private void AddEventToChess(ChessPiece chess)
+        private void Board_ChessCreated(object? _, ChessPiece chess)
         {
             chess.Image.MouseLeftButtonDown += Image_MouseLeftButtonDown;
             chess.Image.MouseMove += Image_MouseMove;
@@ -113,16 +114,18 @@ namespace ChessGame
 
         private void Image_MouseMove(object sender, MouseEventArgs e)
         {
-            if (_board.HoldChess == null) // Not holding a chess
+            var holdChess = _board.HoldChess;
+            if (holdChess == null) // Not holding a chess
                 return;
 
             Point mousePosition = e.GetPosition(UI);
-            _board.HoldChess.FollowMousePosition(mousePosition); // Let chess follow the mouse
+            holdChess.FollowMousePosition(mousePosition); // Let chess follow the mouse
             if (IsOutOfBound(mousePosition))
-                PutDown(_board.PickUpCoord); // Put back to the previous position
+            {
+                UI.Children.Remove(holdChess.Image); // Remove from air  
+                PutDown(holdChess, _board.PickUpCoord); // Put back to the previous position
+            }
         }
-
-        private bool IsOutOfBound(Point mousePos) => mousePos.X < 0 || mousePos.X >= gridBoard.Width || mousePos.Y < 0 || mousePos.Y >= gridBoard.Height;
 
         /// <summary>
         /// Put down a chess.
@@ -141,7 +144,8 @@ namespace ChessGame
             TextBlock goalGrid = _board.TipIcon[endCoord.Row, endCoord.Col];
             if (goalGrid.Visibility != Visibility.Visible || holdChess.IsWhite != _board.IsWhiteTurn)
             {
-                PutDown(_board.PickUpCoord); // Put back to the previous position
+                UI.Children.Remove(holdChess.Image); // Remove from air  
+                PutDown(holdChess, _board.PickUpCoord); // Put back to the previous position
                 return;
             }
 
@@ -165,16 +169,9 @@ namespace ChessGame
             _board._history.TempMiddleMove += $"{name}{(char)('a' + endCoord.Col)}{(char)('0' + 8 - endCoord.Row)}";
             historyTextBox.Text += _board._history.TempMiddleMove + "  "; // Show it on UI
 
-            if (CanPromotion(endCoord))
-            {
-                Debug.WriteLine("Promotion");
-                // Promotion ...
-            }
-
             // PutDown
-            if (holdChess is King king)
-                _board.TryCastle(king, endCoord);
-            PutDown(endCoord);
+            UI.Children.Remove(holdChess.Image); // Remove from air  
+            PutDown(holdChess, endCoord);
 
             // Update castling state
             if (holdChess is Rook rook)
@@ -204,22 +201,14 @@ namespace ChessGame
         /// <summary>
         /// Put chess back to the coord
         /// </summary>
-        private void PutDown(Coord c)
+        private void PutDown(ChessPiece holdChess, Coord c)
         {
-            _board._history.TempMiddleMove = string.Empty; // Reset temp of middle move expression
-
-            // Reset tip icons
-            foreach (var item in _board.TipIcon)
-                if (item.Visibility == Visibility.Visible)
-                    _board.ResetTipIcon(item);
-
-            UI.Children.Remove(_board.HoldChess.Image); // Remove from air  
-            _board.Add(c, _board.HoldChess); // Add to board
+            _board.PutDown(holdChess, c);
             SoundManager.ChessPutDown();
-            _board.HoldChess = null;
         }
 
-        private bool CanPromotion(Coord coord) => _board.HoldChess is Pawn && (coord.Row == 7 && !_board.HoldChess.IsWhite || coord.Row == 0 && _board.HoldChess.IsWhite);
+        private bool IsOutOfBound(Point mousePos) => mousePos.X < 0 || mousePos.X >= gridBoard.Width || mousePos.Y < 0 || mousePos.Y >= gridBoard.Height;
+
 
         private void ImageBoard_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -263,9 +252,6 @@ namespace ChessGame
             historyTextBox.Text = string.Empty;
 
             _board.StartNewGame();
-            foreach (var item in _board.CurrentState)
-                if (item != null)
-                    AddEventToChess(item);
         }
     }
 }
