@@ -29,29 +29,29 @@ namespace ChessGame
      */
     internal class ChessBoard
     {
-        public bool IsWhiteTurn = true;
+        public event EventHandler<ChessMovedEventArgs>? ChessAdded;
+        public event EventHandler<ChessMovedEventArgs>? ChessRemoved;
+        public event EventHandler<ChessMovedEventArgs>? ChessEaten;
+
         //public bool isHoldingChess = false;
-        public TextBlock[,] TipIcon = new TextBlock[SIZE, SIZE]; // The tips when moving the chess
+        public TextBlock[,] TipIcon = new TextBlock[SIZE, SIZE]; // The tips when moving the chess. Also use to check valid moves.
         public Coord PickUpCoord; // Current Coordinates when mouse pick up a chess
-        public ChessPiece?[,] CurrentSituation; // Current game situation of the board
         public ChessPiece? HoldChess; // Current holding chess
-        private const int SIZE = 8; // Number of grids on a side
-        private Grid _grid; // Corresponding grid item of board in MainWindow
+        public const int SIZE = 8; // Number of grids on a side
         //public Stack<Coords> eatCoords = new Stack<Coords>(); // The coordinates where you can eat chess
         //public Stack<Coords> moveCoords = new Stack<Coords>(); // The coordinates where you can move chess
+        public History _history = new History();
 
+        public bool IsWhiteTurn { get; set; }
+        public King WhiteKing { get; private set; }
+        public King BlackKing { get; private set; }
+        public ChessPiece?[,] CurrentState { get; private set; } // Current game situation of the board
         public bool CanShortCastling { get; set; } = true;
         public bool CanLongCastling { get; set; } = true;
 
-        public ChessBoard(Grid grid)
+        public ChessBoard()
         {
-            _grid = grid;
-            ChessPiece.Size = this._grid.Width / SIZE;
-            CurrentSituation = new ChessPiece[SIZE, SIZE];
-            //Add(new Coords(0, 4), new Knight(true));
-            //Add(new Coords(7, 4), new King(false));
             InitializeTipIcon();
-            InitializeChessesPosition();
         }
 
         private void InitializeTipIcon()
@@ -66,11 +66,15 @@ namespace ChessGame
                         Opacity = 0.5,
                     };
                     ResetTipIcon(textBlock);
-                    _grid.Children.Add(textBlock);
-                    Grid.SetRow(textBlock, i);
-                    Grid.SetColumn(textBlock, j);
                     TipIcon[i, j] = textBlock;
                 }
+        }
+
+        public void StartNewGame()
+        {
+            InitializeChessesPosition();
+            IsWhiteTurn = true;
+            _history = new History();
         }
 
         public void ResetTipIcon(TextBlock t)
@@ -81,15 +85,18 @@ namespace ChessGame
 
         private void InitializeChessesPosition()
         {
+            CurrentState = new ChessPiece[SIZE, SIZE];
+
             bool isWhite = true;
-            Add(new Coord(7, 0), new Rook(isWhite) { IsLeft = true });
+            Add(new Coord(7, 0), new Rook(isWhite));
             Add(new Coord(7, 1), new Knight(isWhite));
             Add(new Coord(7, 2), new Bishop(isWhite));
             Add(new Coord(7, 3), new Queen(isWhite));
-            Add(new Coord(7, 4), new King(isWhite));
+            WhiteKing = new King(isWhite);
+            Add(new Coord(7, 4), WhiteKing);
             Add(new Coord(7, 5), new Bishop(isWhite));
             Add(new Coord(7, 6), new Knight(isWhite));
-            Add(new Coord(7, 7), new Rook(isWhite));
+            Add(new Coord(7, 7), new Rook(isWhite) { IsShortSide = true });
             for (int j = 0; j < SIZE; j++)
                 Add(new Coord(6, j), new Pawn(isWhite));
 
@@ -98,26 +105,45 @@ namespace ChessGame
             Add(new Coord(0, 1), new Knight(isWhite));
             Add(new Coord(0, 2), new Bishop(isWhite));
             Add(new Coord(0, 3), new Queen(isWhite));
-            Add(new Coord(0, 4), new King(isWhite));
+            BlackKing = new King(isWhite);
+            Add(new Coord(0, 4), BlackKing);
             Add(new Coord(0, 5), new Bishop(isWhite));
             Add(new Coord(0, 6), new Knight(isWhite));
-            Add(new Coord(0, 7), new Rook(isWhite) { IsLeft = true });
+            Add(new Coord(0, 7), new Rook(isWhite) { IsShortSide = true });
             for (int j = 0; j < SIZE; j++)
                 Add(new Coord(1, j), new Pawn(isWhite));
         }
 
-        // Add the chess to board corresponding to the coordinates
-        public void Add(Coord coord, ChessPiece chess)
+        public Coord GetRookStartingCoord(bool isWhite, bool isShort)
         {
-            Image img = chess.Image;
-            img.Margin = new Thickness(0, 0, 0, 0);
-            _grid.Children.Add(img);
-            Grid.SetRow(img, coord.Row);
-            Grid.SetColumn(img, coord.Col);
-            CurrentSituation[coord.Row, coord.Col] = chess;
+            int rank = isWhite ? 7 : 0;
+            int file = isShort ? 7 : 0;
+            return new Coord(rank, file);
         }
 
-        public bool IsOutOfBound(Point mousePos) => mousePos.X < 0 || mousePos.X >= _grid.Width || mousePos.Y < 0 || mousePos.Y >= _grid.Height;
+        // Add the chess to board corresponding to the coordinates
+        public void Add(Coord coord, ChessPiece chessToAdd)
+        {
+            chessToAdd.Coord = coord;
+            ChessAdded?.Invoke(this, new ChessMovedEventArgs(chessToAdd, coord));
+            CurrentState[coord.Row, coord.Col] = chessToAdd;
+        }
+
+        public ChessPiece? Remove(Coord coord)
+        {
+            var chessToRemove = CurrentState[coord.Row, coord.Col];
+            OnChessRemoved(chessToRemove, coord);
+            CurrentState[coord.Row, coord.Col] = null;
+            return chessToRemove;
+        }
+
+        public void Move(Coord startingCoord, Coord endCoord)
+        {
+            var chess = Remove(startingCoord);
+            if (chess == null)
+                return;
+            Add(endCoord, chess);
+        }
 
         public bool IsOutOfBound(Coord boardCoord) => boardCoord.Col < 0 || boardCoord.Col >= SIZE || boardCoord.Row < 0 || boardCoord.Row >= SIZE;
 
@@ -153,7 +179,7 @@ namespace ChessGame
             if (IsOutOfBound(coord))
                 return false;
 
-            ChessPiece? targetChess = CurrentSituation[coord.Row, coord.Col];
+            ChessPiece? targetChess = CurrentState[coord.Row, coord.Col];
             if (targetChess == null) // No Chess there (Non-eaten)
             {
                 TipIcon[coord.Row, coord.Col].Visibility = Visibility.Visible;
@@ -175,6 +201,49 @@ namespace ChessGame
             //Debug.WriteLine(isWhiteTurn);
 
             return true;
+        }
+
+        protected virtual void OnChessRemoved(ChessPiece? chess, Coord coord)
+        {
+            if (chess == null)
+                return;
+            ChessRemoved?.Invoke(this, new ChessMovedEventArgs(chess, coord));
+        }
+
+        public void TryCastle(King king, Coord endCoord)
+        {
+            if (endCoord == king.Coord + new Coord(0, 2)) // Short castling
+            {
+                if (king.IsWhite)
+                    Move(new Coord(7, 7), new Coord(7, 5));
+                else
+                    Move(new Coord(0, 7), new Coord(0, 5));
+            }
+            else if (endCoord == king.Coord + new Coord(0, -2)) // Long castling
+            {
+                if (king.IsWhite)
+                    Move(new Coord(7, 0), new Coord(7, 3));
+                else
+                    Move(new Coord(0, 0), new Coord(0, 3));
+            }
+        }
+
+        public void RemoveEatenChessFromBoard(ChessPiece chessToEat)
+        {
+            _history.EatenChess.Push(chessToEat); // Store the chess
+            ChessEaten?.Invoke(this, new ChessMovedEventArgs(chessToEat, chessToEat.Coord));
+        }
+    }
+
+    class ChessMovedEventArgs : EventArgs
+    {
+        public ChessPiece Chess;
+        public Coord Coord;
+
+        public ChessMovedEventArgs(ChessPiece chess, Coord coord)
+        {
+            Chess = chess;
+            Coord = coord;
         }
     }
 }

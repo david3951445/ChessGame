@@ -32,7 +32,7 @@ namespace ChessGame.ChessPieces
     class Rook : AnyGridChessPiece, ISpecialMovePiece
     {
         public bool HasMoved { get; set; }
-        public bool IsLeft { get; init; }
+        public bool IsShortSide { get; init; }
 
         public Rook(bool isWhite) : base(isWhite, "R")
         {

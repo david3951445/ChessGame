@@ -21,24 +21,32 @@ namespace ChessGame.ChessPieces
     class King : OneGridChessPiece, ISpecialMovePiece
     {
         public bool HasMoved { get; set; }
-        public Coord LongCastlingCoord { get; }
-        public Coord ShortCastlingCoord { get; }
+        public Castling LongCastling { get; }
+        public Castling ShortCastling { get; }
 
         public King(bool isWhite) : base(isWhite, "K")
         {
             Directions = Dir.King();
-            LongCastlingCoord = IsWhite ? new Coord(7, 2) : new Coord(0, 5);
-            ShortCastlingCoord = IsWhite ? new Coord(7, 6) : new Coord(0, 1);
+            LongCastling = new Castling(IsWhite ? new Coord(7, 2) : new Coord(0, 2));
+            ShortCastling = new Castling(IsWhite ? new Coord(7, 6) : new Coord(0, 6));
         }
 
         public override void AddTipToBoard(ChessBoard board)
         {
             base.AddTipToBoard(board);
             // Castling
-            if (board.CanShortCastling)
-                board.AddTip(ShortCastlingCoord, this);
-            if (board.CanLongCastling)
-                board.AddTip(LongCastlingCoord, this);
+            if (ShortCastling.IsValid)
+                board.AddTip(ShortCastling.Coord, this);
+            if (LongCastling.IsValid)
+                board.AddTip(LongCastling.Coord, this);
+        }
+
+        public void DisableCastling(bool isShortSide)
+        {
+            if (isShortSide)
+                ShortCastling.IsValid = false;
+            else
+                LongCastling.IsValid = false;
         }
     }
 
@@ -47,6 +55,17 @@ namespace ChessGame.ChessPieces
         public Knight(bool _isWhite) : base(_isWhite, "N")
         {
             Directions = Dir.Knight();
+        }
+    }
+
+    class Castling
+    {
+        public Coord Coord;
+        public bool IsValid = true;
+
+        public Castling(Coord coord)
+        {
+            Coord = coord;
         }
     }
 }

@@ -21,8 +21,9 @@ namespace ChessGame.ChessPieces
     {
         public static double Size; // image size
 
-        public string? Name { get; } // Abbreviation name
+        public Coord Coord { get; set; }
         public bool IsWhite { get; } // White or black
+        public string? Name { get; } // Abbreviation name
         public Image Image { get; } // Image of chess
         protected Coord[] Directions { get; init; } // Directions of move
 
@@ -37,6 +38,7 @@ namespace ChessGame.ChessPieces
                 Height = Size,
                 HorizontalAlignment = HorizontalAlignment.Left,
                 VerticalAlignment = VerticalAlignment.Top,
+                Margin = new Thickness(0, 0, 0, 0)
             };
             Name = name;
             Directions = new Coord[0];

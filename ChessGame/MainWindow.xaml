@@ -18,7 +18,7 @@
         </Grid.RowDefinitions>
 
         <!--Board-->
-        <Image x:Name="imageBoard" Grid.Row="0" Grid.Column="0" Source="img/board.png" Grid.ColumnSpan="1" MouseLeftButtonDown="ImageBoard_MouseLeftButtonDown" MouseMove="imageBoard_MouseMove" Panel.ZIndex="-2" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+        <Image x:Name="imageBoard" Grid.Row="0" Grid.Column="0" Source="img/board.png" Grid.ColumnSpan="1" MouseLeftButtonDown="ImageBoard_MouseLeftButtonDown" MouseMove="ImageBoard_MouseMove" Panel.ZIndex="-2" HorizontalAlignment="Left" VerticalAlignment="Top"/>
         <Grid x:Name="gridBoard" Grid.Row="0" Grid.Column="0" Width="800" Height="800" HorizontalAlignment="Left" VerticalAlignment="Top">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
@@ -58,8 +58,8 @@
             <TextBlock Grid.Row="7" Grid.Column="6" Text="g" Foreground="#FFEEEED2" HorizontalAlignment="Right" Margin="0,0,0,0" VerticalAlignment="Bottom" FontSize="18" FontWeight="Bold" Height="25" Width="25"/>
             <TextBlock Grid.Row="7" Grid.Column="7" Text="h" Foreground="#FF769656" HorizontalAlignment="Right" Margin="0,0,0,0" VerticalAlignment="Bottom" FontSize="18" FontWeight="Bold" Height="25" Width="25"/>
         </Grid>
-        <StackPanel x:Name="whiteEatenChess" Height="40" HorizontalAlignment="Center" VerticalAlignment="Top" Width="800" Margin="0,845,0,0" Background="#FF909090" Orientation="Horizontal"/>
-        <StackPanel x:Name="blackEatenChess" Height="40" HorizontalAlignment="Center" VerticalAlignment="Top" Width="800" Margin="0,805,0,0" Background="#FFCECECE" Orientation="Horizontal"/>
+        <StackPanel x:Name="whiteEatenChesses" Height="40" HorizontalAlignment="Center" VerticalAlignment="Top" Width="800" Margin="0,845,0,0" Background="#FF909090" Orientation="Horizontal"/>
+        <StackPanel x:Name="blackEatenChesses" Height="40" HorizontalAlignment="Center" VerticalAlignment="Top" Width="800" Margin="0,805,0,0" Background="#FFCECECE" Orientation="Horizontal"/>
 
         <!--buttons-->
 
@@ -68,10 +68,11 @@
         <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Top" Width="180" Height="180" Margin="0,248,0,0" Background="#FFB2B3F1"/>
         <TextBlock Grid.Column="1" HorizontalAlignment="Left" Margin="10,228,0,0" TextWrapping="Wrap" Text="Eaten chess" VerticalAlignment="Top"/>
         <TextBlock Grid.Column="1" HorizontalAlignment="Left" Margin="10,23,0,0" TextWrapping="Wrap" Text="Move history" VerticalAlignment="Top"/>
-        <Button x:Name="firstButton" Grid.Column="1" Content="&lt;&lt;" HorizontalAlignment="Left" Margin="26,433,0,0" VerticalAlignment="Top" FontSize="20" Width="32" Height="32" FontWeight="Bold" Click="firstButton_Click"/>
-        <Button x:Name="previousButton" Grid.Column="1" Content="&lt;" HorizontalAlignment="Left" Margin="63,433,0,0" VerticalAlignment="Top" FontSize="20" Width="32" Height="32" FontWeight="Bold" Click="previousButton_Click"/>
-        <Button x:Name="nextButton" Grid.Column="1" Content="&gt;" HorizontalAlignment="Left" Margin="100,433,0,0" VerticalAlignment="Top" FontSize="20" Width="32" Height="32" FontWeight="Bold" Click="nextButton_Click"/>
-        <Button x:Name="lastButton" Grid.Column="1" Content="&gt;&gt;" HorizontalAlignment="Left" Margin="137,433,0,0" VerticalAlignment="Top" FontSize="20" Width="32" Height="32" FontWeight="Bold" Click="lastButton_Click"/>
+        <Button x:Name="firstButton" Grid.Column="1" Content="&lt;&lt;" HorizontalAlignment="Left" Margin="26,433,0,0" VerticalAlignment="Top" FontSize="20" Width="32" Height="32" FontWeight="Bold" Click="FirstButton_Click"/>
+        <Button x:Name="previousButton" Grid.Column="1" Content="&lt;" HorizontalAlignment="Left" Margin="63,433,0,0" VerticalAlignment="Top" FontSize="20" Width="32" Height="32" FontWeight="Bold" Click="PreviousButton_Click"/>
+        <Button x:Name="nextButton" Grid.Column="1" Content="&gt;" HorizontalAlignment="Left" Margin="100,433,0,0" VerticalAlignment="Top" FontSize="20" Width="32" Height="32" FontWeight="Bold" Click="NextButton_Click"/>
+        <Button x:Name="lastButton" Grid.Column="1" Content="&gt;&gt;" HorizontalAlignment="Left" Margin="137,433,0,0" VerticalAlignment="Top" FontSize="20" Width="32" Height="32" FontWeight="Bold" Click="LastButton_Click"/>
+        <Button x:Name="startButton" Grid.Column="1" Content="Start" HorizontalAlignment="Left" Margin="10,470,0,0" VerticalAlignment="Top" Click="startButton_Click"/>
 
     </Grid>
 

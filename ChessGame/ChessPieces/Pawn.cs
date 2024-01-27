@@ -33,7 +33,7 @@ namespace ChessGame.ChessPieces
             coord += Directions[0]; // Move one grid
             if (!board.IsOutOfBound(coord))
             {
-                targetChess = board.CurrentSituation[coord.Row, coord.Col];
+                targetChess = board.CurrentState[coord.Row, coord.Col];
                 if (targetChess == null)
                 { // No Chess there
                     board.TipIcon[coord.Row, coord.Col].Visibility = Visibility.Visible;
@@ -43,7 +43,7 @@ namespace ChessGame.ChessPieces
                     if (isFirstMove)
                     {
                         coord += Directions[0]; // Move one more grid
-                        targetChess = board.CurrentSituation[coord.Row, coord.Col];
+                        targetChess = board.CurrentState[coord.Row, coord.Col];
                         if (targetChess == null)
                         { // No Chess there
                             board.TipIcon[coord.Row, coord.Col].Visibility = Visibility.Visible;
@@ -58,7 +58,7 @@ namespace ChessGame.ChessPieces
                 coord = board.PickUpCoord + Directions[i];
                 if (!board.IsOutOfBound(coord))
                 {
-                    targetChess = board.CurrentSituation[coord.Row, coord.Col];
+                    targetChess = board.CurrentState[coord.Row, coord.Col];
                     if (targetChess != null && !IsSameColor(targetChess))
                     { // Is Chess there && Different color chess there
                         board.TipIcon[coord.Row, coord.Col].Visibility = Visibility.Visible;
