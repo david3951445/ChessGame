@@ -6,54 +6,33 @@ using System.Windows;
 
 namespace ChessGame.ChessPieces
 {
-    abstract class ChessPiece
+    public enum ChessPieceType
     {
-        public enum Type
-        {
-            Empty,
-            King,
-            Queen,
-            Rook,
-            Bishop,
-            Knight,
-            Pawn
-        }
+        Empty,
+        King,
+        Queen,
+        Rook,
+        Bishop,
+        Knight,
+        Pawn
+    }
 
-        public static double Size; // image size
+    public abstract class ChessPiece
+    {
+        public static double Size = 100; // image size
 
         public Coord Coord { get; set; }
         public bool IsWhite { get; } // White or black
-        public string? Name { get; } // Abbreviation name
+        public string Name { get; } // Abbreviation name
         public Image Image { get; } // Image of chess
         protected Coord[] Directions { get; init; } // Directions of move
 
         protected ChessPiece(bool isWhite, string name)
         {
-            Size = 100;
             IsWhite = isWhite;
-            Image = new Image()
-            {
-                //Stretch = Stretch.Fill,
-                Width = Size,
-                Height = Size,
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Top,
-                Margin = new Thickness(0, 0, 0, 0)
-            };
             Name = name;
+            Image = MediaManager.GetChessImage(isWhite, name, Size);
             Directions = new Coord[0];
-            SetImageSource();
-        }
-
-
-        private void SetImageSource()
-        {
-            string fileName = IsWhite ? $"img/w{Name}.png" : $"img/b{Name}.png";
-            var bitmap = new BitmapImage();
-            bitmap.BeginInit();
-            bitmap.UriSource = new Uri(fileName, UriKind.Relative);
-            bitmap.EndInit();
-            Image.Source = bitmap;
         }
 
         public bool IsSameColor(ChessPiece chess) => IsWhite == chess.IsWhite;

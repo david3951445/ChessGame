@@ -4,15 +4,16 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Diagnostics;
 using ChessGame.ChessPieces;
 using Point = System.Windows.Point;
+using System.Diagnostics;
 
 namespace ChessGame
 {
     public partial class MainWindow : Window
     {
         private ChessBoard _board;
+        private PromotionUI _promotionUI;
 
         public MainWindow()
         {
@@ -69,11 +70,13 @@ namespace ChessGame
             chess.Image.Height = stackPanel.Height; // Match the size of stack panel
         }
 
-        private void Board_ChessCreated(object? _, ChessPiece chess)
+        private void Board_ChessCreated(object? _, ChessPiece chess) => AddImageEvent(chess.Image);
+
+        private void AddImageEvent(Image image)
         {
-            chess.Image.MouseLeftButtonDown += Image_MouseLeftButtonDown;
-            chess.Image.MouseMove += Image_MouseMove;
-            chess.Image.MouseLeftButtonUp += Image_MouseLeftButtonUp;
+            image.MouseLeftButtonDown += Image_MouseLeftButtonDown;
+            image.MouseMove += Image_MouseMove;
+            image.MouseLeftButtonUp += Image_MouseLeftButtonUp;
         }
 
         /// <summary>
@@ -151,7 +154,7 @@ namespace ChessGame
 
             // Valid move
             string name;
-            if (goalGrid.Background == Brushes.Black) // Non-eat move
+            if (currentChess == null) // Non-eat move
             {
                 name = "E"; // Temporary. Denote the Empty chess name
             }
@@ -172,30 +175,30 @@ namespace ChessGame
             // PutDown
             UI.Children.Remove(holdChess.Image); // Remove from air  
             PutDown(holdChess, endCoord);
-
-            // Update castling state
-            if (holdChess is Rook rook)
+            if (_board.CanPromotion(holdChess))
             {
-                if (holdChess.IsWhite)
-                    _board.WhiteKing.DisableCastling(rook.IsShortSide);
-                else
-                    _board.BlackKing.DisableCastling(rook.IsShortSide);
+                _promotionUI = new PromotionUI(holdChess, mousePosition);
+                //_promotionUI.Margin = new Thickness(mousePosition.X, mousePosition.Y, 0, 0);
+                _promotionUI.ChessPieceSelected += PromotionUI_ChessPieceSelected;
+                UI.Children.Add(_promotionUI);
+                Grid.SetRow(_promotionUI, 0);
+                Grid.SetColumn(_promotionUI, 0);
+                //Popup chessPiecePopup = new Popup();
+                //chessPiecePopup.IsOpen = true;
+                //chessPiecePopup.HorizontalOffset = mousePosition.X;
+                //chessPiecePopup.VerticalOffset = mousePosition.Y;
             }
-            else if (holdChess is King)
-            {
-                if (holdChess.IsWhite)
-                {
-                    _board.WhiteKing.DisableCastling(true);
-                    _board.WhiteKing.DisableCastling(false);
-                }
-                else
-                {
-                    _board.BlackKing.DisableCastling(true);
-                    _board.BlackKing.DisableCastling(false);
-                }
-            }
-
+            
+            _board.UpdateCastlingState(holdChess); // Update castling state
             _board.IsWhiteTurn = !_board.IsWhiteTurn; // Switch opponent 
+        }
+
+        private void PromotionUI_ChessPieceSelected(object? sender, ChessPiece chess)
+        {
+            AddImageEvent(chess.Image);
+            _board.Remove(chess.Coord); // Remove pawn
+            _board.Add(chess); // Add promoted chess piece
+            UI.Children.Remove(_promotionUI); // Close promotion UI
         }
 
         /// <summary>
@@ -204,7 +207,7 @@ namespace ChessGame
         private void PutDown(ChessPiece holdChess, Coord c)
         {
             _board.PutDown(holdChess, c);
-            SoundManager.ChessPutDown();
+            MediaManager.ChessPutDown();
         }
 
         private bool IsOutOfBound(Point mousePos) => mousePos.X < 0 || mousePos.X >= gridBoard.Width || mousePos.Y < 0 || mousePos.Y >= gridBoard.Height;

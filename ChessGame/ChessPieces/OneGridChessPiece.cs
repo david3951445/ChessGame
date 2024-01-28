@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ChessGame.ChessPieces
 {
-    abstract class OneGridChessPiece : ChessPiece // Can move one number of grids. ex. King, Knight
+    public abstract class OneGridChessPiece : ChessPiece // Can move one number of grids. ex. King, Knight
     {
         protected OneGridChessPiece(bool isWhite, string name) : base(isWhite, name) { }
 
@@ -18,7 +18,7 @@ namespace ChessGame.ChessPieces
         }
     }
 
-    class King : OneGridChessPiece, ISpecialMovePiece
+    public class King : OneGridChessPiece, ISpecialMovePiece
     {
         public bool HasMoved { get; set; }
         public Castling LongCastling { get; }
@@ -50,7 +50,7 @@ namespace ChessGame.ChessPieces
         }
     }
 
-    class Knight : OneGridChessPiece
+    public class Knight : OneGridChessPiece
     {
         public Knight(bool _isWhite) : base(_isWhite, "N")
         {
@@ -58,7 +58,7 @@ namespace ChessGame.ChessPieces
         }
     }
 
-    class Castling
+    public class Castling
     {
         public Coord Coord;
         public bool IsValid = true;

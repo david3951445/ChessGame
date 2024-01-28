@@ -11,7 +11,7 @@ namespace ChessGame
     /// History of chess moving in chess game.
     /// Contains the function of rewinding and advancing the game.
     /// </summary>
-    internal class History
+    public class History
     {
         public History()
         {
