@@ -86,7 +86,7 @@ namespace ChessGame
         {
             Point mousePosition = e.GetPosition(UI); // Mouse position
             Coord currendCoord = _board.GetPosition(mousePosition); // Current coordinates
-            ChessPiece? chess = _board.CurrentState[currendCoord.Row, currendCoord.Col]; // Chess in current coordinates
+            ChessPiece? chess = _board.GetChessOn(currendCoord); // Chess in current coordinates
 
             if (chess != null) // Mouse hit the chess
             {
@@ -141,7 +141,7 @@ namespace ChessGame
 
             Point mousePosition = e.GetPosition(UI);
             Coord endCoord = _board.GetPosition(mousePosition);
-            var currentChess = _board.CurrentState[endCoord.Row, endCoord.Col]; // Chess in current coordinates
+            var currentChess = _board.GetChessOn(endCoord); // Chess in current coordinates
 
             // Judgment when putting down chess
             TextBlock goalGrid = _board.TipIcon[endCoord.Row, endCoord.Col];
@@ -154,11 +154,11 @@ namespace ChessGame
 
             // Valid move
             string name;
-            if (currentChess == null) // Non-eat move
+            if (currentChess == null) // Non-capture move
             {
                 name = "E"; // Temporary. Denote the Empty chess name
             }
-            else if (goalGrid.Background == Brushes.Red) // Eat move
+            else if (goalGrid.Background == Brushes.Red) // Capture move
             {
                 name = currentChess.Name; // Eaten chess name
                 _board.RemoveEatenChessFromBoard(currentChess);

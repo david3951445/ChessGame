@@ -25,7 +25,10 @@ namespace ChessGame.ChessPieces
         public bool IsWhite { get; } // White or black
         public string Name { get; } // Abbreviation name
         public Image Image { get; } // Image of chess
-        protected Coord[] Directions { get; init; } // Directions of move
+        /// <summary>
+        /// Directions of move
+        /// </summary>
+        protected Coord[] Directions { get; init; }
 
         protected ChessPiece(bool isWhite, string name)
         {
@@ -41,7 +44,7 @@ namespace ChessGame.ChessPieces
 
         public abstract void AddTipToBoard(ChessBoard board); // Find the valid move
 
-        protected static class Dir
+        public static class Dir
         {
             /// <summary>
             /// Plus
@@ -55,7 +58,10 @@ namespace ChessGame.ChessPieces
             /// Start
             /// </summary>
             public static Coord[] King() => Rook().Union(Bishop()).ToArray(); // Plus + X = Star
-            public static Coord[] Knight() => FourDirectios(new Coord(1, 2)).Union(FourDirectios(new Coord(2, 1))).ToArray();
+            public static Coord[] UpperKnight = new Coord[] { new Coord(-1, -2), new Coord(-2, -1), new Coord(-2, 1), new Coord(-1, 2) };
+            public static Coord[] LowerKnight = UpperKnight.Select(c => c.GetRotate180()).ToArray();
+            public static Coord[] Knight() => UpperKnight.Union(LowerKnight).ToArray();
+            public static Coord[] File() => new Coord[] { new Coord(0, 1), new Coord(0, -1) };
             // Here other directions can be defined to generate self-created chess pieces
             // private static Coords[] CustomDir1() {
             //      ...
@@ -72,4 +78,8 @@ namespace ChessGame.ChessPieces
         }
     }
 
+    public interface ISpecialCapture
+    {
+
+    }
 }

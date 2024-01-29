@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Documents;
 
 namespace ChessGame.ChessPieces
 {
@@ -14,10 +15,26 @@ namespace ChessGame.ChessPieces
         {
             foreach (var bias in Directions)
             {
-                Coord coord = board.PickUpCoord + bias;
+                Coord coord = Coord + bias;
                 while (board.AddTip(coord, this))
                     coord += bias;
             }
+        }
+
+        public static bool CanSeeChess(ChessBoard board, Coord startCoord, Coord bias, out ChessPiece? chessPiece)
+        {
+            chessPiece = null;
+            while (!board.IsOutOfBound(startCoord))
+            {
+                chessPiece = board.GetChessOn(startCoord);
+                if (chessPiece == null)
+                {
+                    startCoord += bias;
+                    continue;
+                }
+                return true;
+            }
+            return false;
         }
     }
 

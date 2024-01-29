@@ -43,6 +43,7 @@ namespace ChessGame
 
         public bool IsWhiteTurn { get; set; }
         public ChessPiece?[,] CurrentState { get; private set; } // Current game situation of the board
+        public ChessPiece PawnInPassing { get; private set; }
 
         public ChessBoard()
         {
@@ -153,6 +154,8 @@ namespace ChessGame
             return chessToRemove;
         }
 
+        public ChessPiece? GetChessOn(Coord coord) => CurrentState[coord.Row, coord.Col];
+
         public void Move(Coord startingCoord, Coord endCoord)
         {
             var chess = Remove(startingCoord);
@@ -175,8 +178,7 @@ namespace ChessGame
         /// <param name="mousePosition"> Relative to the top left corner of board </param>
         public void SetPosition(Point mousePosition)
         {
-            PickUpCoord.Row = (int)(mousePosition.Y / ChessPiece.Size); // Row index;
-            PickUpCoord.Col = (int)(mousePosition.X / ChessPiece.Size); // Column index
+            PickUpCoord = new Coord(mousePosition.Y / ChessPiece.Size, mousePosition.X / ChessPiece.Size);
         }
 
         /// <summary>
@@ -191,6 +193,7 @@ namespace ChessGame
                 (int)(mousePosition.X / ChessPiece.Size) // Column index
             );
         }
+
         /// <summary>
         /// Add tip to the given coord with the holding chess.
         /// </summary>
@@ -201,7 +204,7 @@ namespace ChessGame
             if (IsOutOfBound(coord))
                 return false;
 
-            ChessPiece? targetChess = CurrentState[coord.Row, coord.Col];
+            ChessPiece? targetChess = GetChessOn(coord);
             if (targetChess == null) // No Chess there (Non-eaten)
             {
                 TipIcon[coord.Row, coord.Col].Visibility = Visibility.Visible;

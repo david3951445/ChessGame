@@ -26,28 +26,26 @@ namespace ChessGame.ChessPieces
 
         public override void AddTipToBoard(ChessBoard board)
         {
-            Coord coord = board.PickUpCoord;
+            Coord coord = Coord;
             ChessPiece? targetChess;
 
             // Forward
             coord += Directions[0]; // Move one grid
             if (!board.IsOutOfBound(coord))
             {
-                targetChess = board.CurrentState[coord.Row, coord.Col];
-                if (targetChess == null)
-                { // No Chess there
+                targetChess = board.GetChessOn(coord);
+                if (targetChess == null) // No Chess there
+                {
                     board.TipIcon[coord.Row, coord.Col].Visibility = Visibility.Visible;
 
                     // Forward, the first move can go one more grid
-                    bool isFirstMove = board.PickUpCoord.Row == 1 && !IsWhite || board.PickUpCoord.Row == 6 && IsWhite; // white or black pawn is in the initial position
+                    bool isFirstMove = coord.Row == 1 && !IsWhite || coord.Row == 6 && IsWhite; // white or black pawn is in the initial position
                     if (isFirstMove)
                     {
                         coord += Directions[0]; // Move one more grid
-                        targetChess = board.CurrentState[coord.Row, coord.Col];
-                        if (targetChess == null)
-                        { // No Chess there
+                        targetChess = board.GetChessOn(coord);
+                        if (targetChess == null) // No Chess there
                             board.TipIcon[coord.Row, coord.Col].Visibility = Visibility.Visible;
-                        }
                     }
                 }
             }
@@ -55,10 +53,10 @@ namespace ChessGame.ChessPieces
             // Both sides
             for (int i = 1; i < 3; i++)
             {
-                coord = board.PickUpCoord + Directions[i];
+                coord = Coord + Directions[i];
                 if (!board.IsOutOfBound(coord))
                 {
-                    targetChess = board.CurrentState[coord.Row, coord.Col];
+                    targetChess = board.GetChessOn(coord);
                     if (targetChess != null && !IsSameColor(targetChess))
                     { // Is Chess there && Different color chess there
                         board.TipIcon[coord.Row, coord.Col].Visibility = Visibility.Visible;
@@ -67,8 +65,7 @@ namespace ChessGame.ChessPieces
                 }
             }
 
-            // En passant
+            // En passant (In passing pawn)
         }
     }
-
 }
