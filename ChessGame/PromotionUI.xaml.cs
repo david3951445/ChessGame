@@ -52,8 +52,8 @@ namespace ChessGame
             BishopImage.MouseDown += ChessPiece_Click;
 
             grid.AddChild(QueenImage, 0, 0);
-            grid.AddChild(KnightImage, 1, 0);
-            grid.AddChild(RookImage, 0, 1);
+            grid.AddChild(KnightImage, 0, 1);
+            grid.AddChild(RookImage, 1, 0);
             grid.AddChild(BishopImage, 1, 1);
         }
 

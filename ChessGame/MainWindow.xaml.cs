@@ -26,14 +26,9 @@ namespace ChessGame
         private void InitializeBoard()
         {
             // Add tip icons
-            for (int i = 0; i < ChessBoard.SIZE; i++)
-                for (int j = 0; j < ChessBoard.SIZE; j++)
-                {
-                    var textBlock = _board.TipIcon[i, j];
-                    gridBoard.Children.Add(textBlock);
-                    Grid.SetRow(textBlock, i);
-                    Grid.SetColumn(textBlock, j);
-                }
+            for (int row = 0; row < ChessBoard.SIZE; row++)
+                for (int col = 0; col < ChessBoard.SIZE; col++)
+                    gridBoard.AddChild(_board.TipIcon[row, col], row, col);
 
             // Add chess pieces to board
             _board.ChessAdded += Board_ChessAdded;
@@ -47,9 +42,7 @@ namespace ChessGame
         {
             var image = e.Chess.Image;
             image.Margin = new Thickness(0, 0, 0, 0);
-            gridBoard.Children.Add(image);
-            Grid.SetRow(image, e.Coord.Row);
-            Grid.SetColumn(image, e.Coord.Col);
+            gridBoard.AddChild(image, e.Coord.Row, e.Coord.Col);
         }
 
         private void Board_ChessRemoved(object? _, ChessMovedEventArgs e)
@@ -102,9 +95,7 @@ namespace ChessGame
                 var image = chess.Image;
 
                 // Add chess image to "air"
-                UI.Children.Add(image);
-                Grid.SetRow(image, 0);
-                Grid.SetColumn(image, 0);
+                UI.AddChild(image, 0, 0);
                 chess.FollowMousePosition(mousePosition);
                 _board.HoldChess = chess;
             }
@@ -144,16 +135,11 @@ namespace ChessGame
 
             // Judgment when putting down chess
             TextBlock goalGrid = _board.TipIcon[endCoord.Row, endCoord.Col];
-            if (goalGrid.Visibility != Visibility.Visible || holdChess.IsWhite != _board.IsWhiteTurn)
+            if (goalGrid.Visibility != Visibility.Visible || holdChess.IsWhite != _board.IsWhiteTurn || _board.IsKingDepended(holdChess))
             {
                 PutDown(holdChess, _board.PickUpCoord); // Put back to the previous position
                 return;
             }
-            //if (King is depend)
-            //{
-            //    ...
-            //    return;
-            //}
 
             // Valid move
             string name;
@@ -182,9 +168,7 @@ namespace ChessGame
                 _promotionUI = new PromotionUI(holdChess, mousePosition);
                 //_promotionUI.Margin = new Thickness(mousePosition.X, mousePosition.Y, 0, 0);
                 _promotionUI.ChessPieceSelected += PromotionUI_ChessPieceSelected;
-                UI.Children.Add(_promotionUI);
-                Grid.SetRow(_promotionUI, 0);
-                Grid.SetColumn(_promotionUI, 0);
+                UI.AddChild(_promotionUI, 0, 0);
                 //Popup chessPiecePopup = new Popup();
                 //chessPiecePopup.IsOpen = true;
                 //chessPiecePopup.HorizontalOffset = mousePosition.X;

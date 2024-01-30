@@ -10,11 +10,11 @@ namespace ChessGame
 {
     public static class Extensions
     {
-        public static void AddChild(this Grid grid, UIElement element, int column, int row)
+        public static void AddChild(this Grid grid, UIElement element, int row, int column)
         {
             grid.Children.Add(element);
-            Grid.SetColumn(element, column);
             Grid.SetRow(element, row);
+            Grid.SetColumn(element, column);
         }
 
         public static IEnumerable<T> NonNull<T>(this IEnumerable<T?> items) where T : class

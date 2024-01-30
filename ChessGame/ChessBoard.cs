@@ -289,6 +289,12 @@ namespace ChessGame
             return true;
         }
 
+        public bool IsKingDepended(ChessPiece holdChess)
+        {
+            var king = holdChess.IsWhite ? _whiteKing : _blackKing;
+            return king.IsUnderAttacked(this);
+        }
+
         //public ChessPiece TryPromote(ChessPiece chessToPromote)
         //{
         //    if (!CanPromotion(chessToPromote))
