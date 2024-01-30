@@ -38,7 +38,7 @@ namespace ChessGame
             // Add chess pieces to board
             _board.ChessAdded += Board_ChessAdded;
             _board.ChessRemoved += Board_ChessRemoved;
-            _board.ChessEaten += Board_ChessEaten;
+            _board.ChessCaptured += Board_ChessEaten;
             _board.ChessCreated += Board_ChessCreated;
             StartNewGame();
         }
@@ -125,7 +125,6 @@ namespace ChessGame
             holdChess.FollowMousePosition(mousePosition); // Let chess follow the mouse
             if (IsOutOfBound(mousePosition))
             {
-                UI.Children.Remove(holdChess.Image); // Remove from air  
                 PutDown(holdChess, _board.PickUpCoord); // Put back to the previous position
             }
         }
@@ -147,10 +146,14 @@ namespace ChessGame
             TextBlock goalGrid = _board.TipIcon[endCoord.Row, endCoord.Col];
             if (goalGrid.Visibility != Visibility.Visible || holdChess.IsWhite != _board.IsWhiteTurn)
             {
-                UI.Children.Remove(holdChess.Image); // Remove from air  
                 PutDown(holdChess, _board.PickUpCoord); // Put back to the previous position
                 return;
             }
+            //if (King is depend)
+            //{
+            //    ...
+            //    return;
+            //}
 
             // Valid move
             string name;
@@ -161,7 +164,7 @@ namespace ChessGame
             else if (goalGrid.Background == Brushes.Red) // Capture move
             {
                 name = currentChess.Name; // Eaten chess name
-                _board.RemoveEatenChessFromBoard(currentChess);
+                _board.RemoveCapturedChessFromBoard(currentChess);
             }
             else
             {
@@ -173,7 +176,6 @@ namespace ChessGame
             historyTextBox.Text += _board._history.TempMiddleMove + "  "; // Show it on UI
 
             // PutDown
-            UI.Children.Remove(holdChess.Image); // Remove from air  
             PutDown(holdChess, endCoord);
             if (_board.CanPromotion(holdChess))
             {
@@ -206,6 +208,7 @@ namespace ChessGame
         /// </summary>
         private void PutDown(ChessPiece holdChess, Coord c)
         {
+            UI.Children.Remove(holdChess.Image); // Remove from air  
             _board.PutDown(holdChess, c);
             MediaManager.ChessPutDown();
         }

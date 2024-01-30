@@ -43,6 +43,13 @@ namespace ChessGame.ChessPieces
         {
             Directions = Dir.Rook();
         }
+
+        public static Coord GetStartingCoord(bool isWhite, bool isShort)
+        {
+            int rank = isWhite ? 7 : 0;
+            int file = isShort ? 7 : 0;
+            return new Coord(rank, file);
+        }
     }
 
     class Bishop : AnyGridChessPiece

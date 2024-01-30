@@ -27,7 +27,7 @@ namespace ChessGame
     {
         public event EventHandler<ChessMovedEventArgs>? ChessAdded;
         public event EventHandler<ChessMovedEventArgs>? ChessRemoved;
-        public event EventHandler<ChessMovedEventArgs>? ChessEaten;
+        public event EventHandler<ChessMovedEventArgs>? ChessCaptured;
         public event EventHandler<ChessPiece>? ChessCreated;
         public Action? GetPromotedChess;
 
@@ -128,13 +128,6 @@ namespace ChessGame
             return chess;
         }
 
-        public Coord GetRookStartingCoord(bool isWhite, bool isShort)
-        {
-            int rank = isWhite ? 7 : 0;
-            int file = isShort ? 7 : 0;
-            return new Coord(rank, file);
-        }
-
         // Add the chess to board corresponding to the coordinates
         private void Add(ChessPieceType type, bool isWhite, Coord coord) => Add(CreatePiece(type, isWhite, coord));
 
@@ -155,8 +148,6 @@ namespace ChessGame
             return chessToRemove;
         }
 
-        public IEnumerable<ChessPiece> GetChessesOn(IEnumerable<Coord> coords) => coords.Select(c => GetChessOn(c)).Where(seenChess => seenChess != null);
-
         public ChessPiece? GetChessOn(Coord coord) => IsOutOfBound(coord) ? null : CurrentState[coord.Row, coord.Col];
 
         /// <summary>
@@ -176,9 +167,9 @@ namespace ChessGame
             return chessPiece;
         }
 
-        public void Move(Coord startingCoord, Coord endCoord)
+        public void Move(Coord startCoord, Coord endCoord)
         {
-            var chess = Remove(startingCoord);
+            var chess = Remove(startCoord);
             if (chess == null)
                 return;
             Add(chess, endCoord);
@@ -186,10 +177,10 @@ namespace ChessGame
 
         public bool IsOutOfBound(Coord boardCoord) => boardCoord.Col < 0 || boardCoord.Col >= SIZE || boardCoord.Row < 0 || boardCoord.Row >= SIZE;
 
-        public void RemoveEatenChessFromBoard(ChessPiece chessToEat)
+        public void RemoveCapturedChessFromBoard(ChessPiece capturedChess)
         {
-            _history.EatenChess.Push(chessToEat); // Store the chess
-            ChessEaten?.Invoke(this, new ChessMovedEventArgs(chessToEat, chessToEat.Coord));
+            _history.CapturedChess.Push(capturedChess); // Store the chess
+            ChessCaptured?.Invoke(this, new ChessMovedEventArgs(capturedChess, capturedChess.Coord));
         }
 
         /// <summary>
@@ -290,21 +281,11 @@ namespace ChessGame
             if (holdChess is not King king)
                 return false;
 
-            if (endCoord == king.Coord + new Coord(0, 2)) // Short castling
-            {
-                if (king.IsWhite)
-                    Move(new Coord(7, 7), new Coord(7, 5));
-                else
-                    Move(new Coord(0, 7), new Coord(0, 5));
-            }
-            else if (endCoord == king.Coord + new Coord(0, -2)) // Long castling
-            {
-                if (king.IsWhite)
-                    Move(new Coord(7, 0), new Coord(7, 3));
-                else
-                    Move(new Coord(0, 0), new Coord(0, 3));
-            }
-
+            if (endCoord == king.ShortCastling.KingEndCoord) // Short castling
+                Move(king.ShortCastling.RookStartCoord, king.ShortCastling.RookEndCoord);
+            else if (endCoord == king.LongCastling.KingEndCoord) // Long castling
+                Move(king.LongCastling.RookStartCoord, king.LongCastling.RookEndCoord);
+            
             return true;
         }
 

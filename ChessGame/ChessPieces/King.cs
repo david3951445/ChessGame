@@ -40,27 +40,32 @@ namespace ChessGame.ChessPieces
 
     public class Castling
     {
-        public Coord[] PassingCoords;
-        public Coord KingEndCoord;
         public bool IsKingOrRookMoved; // Permanent
         private bool _isWhite;
+        private Coord[] _passingCoords;
+
+        public Coord KingEndCoord { get; }        
+        public Coord RookStartCoord { get; }
+        public Coord RookEndCoord { get; }
 
         public Castling(bool isWhite, IEnumerable<Coord> coords)
         {
             _isWhite = isWhite;
-            PassingCoords = coords.Skip(1).Take(coords.Count() - 2).ToArray();
-            KingEndCoord = PassingCoords[1];
+            _passingCoords = coords.Skip(1).Take(coords.Count() - 2).ToArray();
+            RookEndCoord = _passingCoords.First();
+            KingEndCoord = _passingCoords.ElementAt(1);
+            RookStartCoord = _passingCoords.Last();
         }
 
         public bool IsCurrentValid(ChessBoard board)
         {
             if (IsKingOrRookMoved)
                 return false;
-            if (PassingCoords.Any(coord => board.GetChessOn(coord) != null))
+            if (_passingCoords.Any(coord => board.GetChessOn(coord) != null))
                 return false;
 
             // whether PassingCoords is under attack
-            foreach (var passingCoord in PassingCoords)
+            foreach (var passingCoord in _passingCoords)
             {
                 // Rook (rank and file)
                 var dummyRook = new Rook(_isWhite) { Coord = passingCoord };
