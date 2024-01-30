@@ -16,5 +16,8 @@ namespace ChessGame
             Grid.SetColumn(element, column);
             Grid.SetRow(element, row);
         }
+
+        public static IEnumerable<T> NonNull<T>(this IEnumerable<T?> items) where T : class
+            => items.Where(item => item != null).Select(item => item!);
     }
 }

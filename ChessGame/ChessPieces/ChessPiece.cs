@@ -3,6 +3,7 @@ using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Windows;
+using System.Collections.Generic;
 
 namespace ChessGame.ChessPieces
 {
@@ -26,9 +27,9 @@ namespace ChessGame.ChessPieces
         public string Name { get; } // Abbreviation name
         public Image Image { get; } // Image of chess
         /// <summary>
-        /// Directions of move
+        /// Directions of captured move
         /// </summary>
-        protected Coord[] Directions { get; init; }
+        public Coord[] Directions { get; init; }
 
         protected ChessPiece(bool isWhite, string name)
         {
@@ -42,7 +43,16 @@ namespace ChessGame.ChessPieces
 
         public void FollowMousePosition(Point mousePosition) => Image.Margin = new Thickness(mousePosition.X - Size / 2, mousePosition.Y - Size / 2, 0, 0);
 
-        public abstract void AddTipToBoard(ChessBoard board); // Find the valid move
+        /// <summary>
+        /// Find the valid move
+        /// </summary>
+        /// <param name="board"></param>
+        public abstract void AddTipToBoard(ChessBoard board);
+
+        /// <summary>
+        /// Find the chesses can be captured
+        /// </summary>
+        public abstract IEnumerable<ChessPiece> CapturedChesses(ChessBoard board);
 
         public static class Dir
         {
@@ -55,13 +65,19 @@ namespace ChessGame.ChessPieces
             /// </summary>
             public static Coord[] Bishop() => FourDirectios(new Coord(1, 1));
             /// <summary>
-            /// Start
+            /// Star
             /// </summary>
             public static Coord[] King() => Rook().Union(Bishop()).ToArray(); // Plus + X = Star
-            public static Coord[] UpperKnight = new Coord[] { new Coord(-1, -2), new Coord(-2, -1), new Coord(-2, 1), new Coord(-1, 2) };
-            public static Coord[] LowerKnight = UpperKnight.Select(c => c.GetRotate180()).ToArray();
-            public static Coord[] Knight() => UpperKnight.Union(LowerKnight).ToArray();
-            public static Coord[] File() => new Coord[] { new Coord(0, 1), new Coord(0, -1) };
+            /// <summary>
+            /// Knight
+            /// </summary>
+            public static Coord[] Knight() => FourDirectios(new Coord(1, 2)).Union(FourDirectios(new Coord(2, 1))).ToArray();
+            /// <summary>
+            /// Pawn
+            /// </summary>
+            public static Coord[] UpwardCapturedPawn = new Coord[] { new Coord(-1, -1), new Coord(-1, 1) };
+            public static Coord[] DownwardCapturedPawn = UpwardCapturedPawn.Select(c => c.GetRotate180()).ToArray();
+
             // Here other directions can be defined to generate self-created chess pieces
             // private static Coords[] CustomDir1() {
             //      ...

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
 using ChessGame.ChessPieces;
 
@@ -154,7 +155,26 @@ namespace ChessGame
             return chessToRemove;
         }
 
-        public ChessPiece? GetChessOn(Coord coord) => CurrentState[coord.Row, coord.Col];
+        public IEnumerable<ChessPiece> GetChessesOn(IEnumerable<Coord> coords) => coords.Select(c => GetChessOn(c)).Where(seenChess => seenChess != null);
+
+        public ChessPiece? GetChessOn(Coord coord) => IsOutOfBound(coord) ? null : CurrentState[coord.Row, coord.Col];
+
+        /// <summary>
+        /// Get seen chess on the direction of <paramref name="bias"/> from <paramref name="startCoord"/>.
+        /// </summary>
+        public ChessPiece? GetSeenChess(Coord startCoord, Coord bias)
+        {
+            ChessPiece? chessPiece = null;
+            startCoord += bias;
+            while (!IsOutOfBound(startCoord))
+            {
+                chessPiece = GetChessOn(startCoord);
+                if (chessPiece != null)
+                    break;
+                startCoord += bias;
+            }
+            return chessPiece;
+        }
 
         public void Move(Coord startingCoord, Coord endCoord)
         {
@@ -230,7 +250,6 @@ namespace ChessGame
 
         public void PutDown(ChessPiece chess, Coord endCoord)
         {
-            //chess = TryPromote(chess);
             TryCastle(chess, endCoord);
             Add(chess, endCoord); // Add to board
             HoldChess = null;
