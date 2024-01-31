@@ -77,25 +77,24 @@ namespace ChessGame
         {
             Point mousePosition = e.GetPosition(UI); // Mouse position
             Coord currendCoord = _board.GetPosition(mousePosition); // Current coordinates
-            ChessPiece? chess = _board.GetChessOn(currendCoord); // Chess in current coordinates
+            ChessPiece? pickUpChess = _board.GetChessOn(currendCoord); // Chess in current coordinates
 
-            if (chess != null) // Mouse hit the chess
+            if (pickUpChess != null) // Mouse hit the chess
             {
-                // Record the chess
-                _board._history.TempMiddleMove += $"{chess.Name}{(char)('a' + currendCoord.Col)}{(char)('0' + 8 - currendCoord.Row)}";
-                _board.PickUpCoord = currendCoord;
-
                 // Find and show the valid move on board
-                chess.AddTipToBoard(_board);
+                pickUpChess.AddTipToBoard(_board);
 
-                // Remove chess image from board
-                _board.Remove(currendCoord);
-                var image = chess.Image;
+                // Remove chess from board
+                _board.Remove(pickUpChess);
 
                 // Add chess image to "air"
+                var image = pickUpChess.Image;
                 UI.AddChild(image, 0, 0);
-                chess.FollowMousePosition(mousePosition);
-                _board.HoldChess = chess;
+                pickUpChess.FollowMousePosition(mousePosition);
+                _board.HoldChess = pickUpChess;
+
+                // Record the chess
+                _board._history.TempMiddleMove += $"{pickUpChess.Name}{(char)('a' + currendCoord.Col)}{(char)('0' + 8 - currendCoord.Row)}";
             }
             else
             {
@@ -114,7 +113,7 @@ namespace ChessGame
             holdChess.FollowMousePosition(mousePosition); // Let chess follow the mouse
             if (IsOutOfBound(mousePosition))
             {
-                PutDown(holdChess, _board.PickUpCoord); // Put back to the previous position
+                PutDown(holdChess, holdChess.Coord); // Put back to the previous position
             }
         }
 
@@ -136,7 +135,7 @@ namespace ChessGame
             TextBlock goalGrid = _board.TipIcon[endCoord.Row, endCoord.Col];
             if (goalGrid.Visibility != Visibility.Visible || holdChess.IsWhite != _board.IsWhiteTurn || _board.IsKingDepended(holdChess))
             {
-                PutDown(holdChess, _board.PickUpCoord); // Put back to the previous position
+                PutDown(holdChess, holdChess.Coord); // Put back to the previous position
                 return;
             }
 
@@ -184,12 +183,12 @@ namespace ChessGame
         }
 
         /// <summary>
-        /// Put chess back to the coord
+        /// Put chess to the coord
         /// </summary>
-        private void PutDown(ChessPiece holdChess, Coord c)
+        private void PutDown(ChessPiece holdChess, Coord endCoord)
         {
             UI.Children.Remove(holdChess.Image); // Remove from air  
-            _board.PutDown(holdChess, c);
+            _board.PutDown(holdChess, endCoord);
             MediaManager.ChessPutDown();
         }
 

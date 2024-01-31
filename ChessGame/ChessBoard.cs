@@ -33,7 +33,6 @@ namespace ChessGame
 
         //public bool isHoldingChess = false;
         public TextBlock[,] TipIcon = new TextBlock[SIZE, SIZE]; // The tips when moving the chess. Also use to check valid moves.
-        public Coord PickUpCoord; // Current Coordinates when mouse pick up a chess
         public ChessPiece? HoldChess; // Current holding chess
         public const int SIZE = 8; // Number of grids on a side
         //public Stack<Coords> eatCoords = new Stack<Coords>(); // The coordinates where you can eat chess
@@ -140,10 +139,12 @@ namespace ChessGame
             CurrentState[coord.Row, coord.Col] = chessToAdd;
         }
 
+        public ChessPiece? Remove(ChessPiece chessToRemove) => Remove(chessToRemove.Coord);
+
         public ChessPiece? Remove(Coord coord)
         {
             var chessToRemove = CurrentState[coord.Row, coord.Col];
-            OnChessRemoved(chessToRemove, coord);
+            OnChessRemoved(chessToRemove);
             CurrentState[coord.Row, coord.Col] = null;
             return chessToRemove;
         }
@@ -181,15 +182,6 @@ namespace ChessGame
         {
             _history.CapturedChess.Push(capturedChess); // Store the chess
             ChessCaptured?.Invoke(this, capturedChess);
-        }
-
-        /// <summary>
-        /// Set the position of the mouse cursor on the chessboard coordinates
-        /// </summary>
-        /// <param name="mousePosition"> Relative to the top left corner of board </param>
-        public void SetPosition(Point mousePosition)
-        {
-            PickUpCoord = new Coord(mousePosition.Y / ChessPiece.Size, mousePosition.X / ChessPiece.Size);
         }
 
         /// <summary>
@@ -313,7 +305,7 @@ namespace ChessGame
 
         public bool CanPromotion(ChessPiece chess) => chess is Pawn && (chess.Coord.Row == 7 && !chess.IsWhite || chess.Coord.Row == 0 && chess.IsWhite);
 
-        protected virtual void OnChessRemoved(ChessPiece? chess, Coord coord)
+        protected virtual void OnChessRemoved(ChessPiece? chess)
         {
             if (chess == null)
                 return;
