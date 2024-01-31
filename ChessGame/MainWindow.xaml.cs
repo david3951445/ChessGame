@@ -12,8 +12,8 @@ namespace ChessGame
 {
     public partial class MainWindow : Window
     {
-        private ChessBoard _board;
-        private PromotionUI _promotionUI;
+        private readonly ChessBoard _board;
+        private PromotionUI? _promotionUI;
 
         public MainWindow()
         {
@@ -33,34 +33,32 @@ namespace ChessGame
             // Add chess pieces to board
             _board.ChessAdded += Board_ChessAdded;
             _board.ChessRemoved += Board_ChessRemoved;
-            _board.ChessCaptured += Board_ChessEaten;
+            _board.ChessCaptured += Board_ChessCaptured;
             _board.ChessCreated += Board_ChessCreated;
             StartNewGame();
         }
 
-        private void Board_ChessAdded(object? _, ChessMovedEventArgs e)
+        private void Board_ChessAdded(object? _, ChessPiece chess)
         {
-            var image = e.Chess.Image;
+            var image = chess.Image;
             image.Margin = new Thickness(0, 0, 0, 0);
-            gridBoard.AddChild(image, e.Coord.Row, e.Coord.Col);
+            gridBoard.AddChild(image, chess.Coord.Row, chess.Coord.Col);
         }
 
-        private void Board_ChessRemoved(object? _, ChessMovedEventArgs e)
+        private void Board_ChessRemoved(object? _, ChessPiece chess)
         {
-            gridBoard.Children.Remove(e.Chess.Image);
+            gridBoard.Children.Remove(chess.Image);
         }
 
-        private void Board_ChessEaten(object? sender, ChessMovedEventArgs e)
+        private void Board_ChessCaptured(object? _, ChessPiece chess)
         {
             // Remove it from board to eaten chess stackpanel
-            var chess = e.Chess;
-            StackPanel stackPanel = whiteEatenChesses;
-            if (chess.IsWhite)
-                stackPanel = blackEatenChesses;
-            gridBoard.Children.Remove(chess.Image); // Remove from board
-            stackPanel.Children.Add(chess.Image); // Show eaten chess on the stack panel
-            chess.Image.Width = stackPanel.Height; // Match the size of stack panel
-            chess.Image.Height = stackPanel.Height; // Match the size of stack panel
+            StackPanel stackPanel = chess.IsWhite ? blackEatenChesses : whiteEatenChesses;
+            var image = chess.Image;
+            gridBoard.Children.Remove(image); // Remove from board
+            stackPanel.Children.Add(image); // Show eaten chess on the stack panel
+            image.Width = stackPanel.Height; // Match the size of stack panel
+            image.Height = stackPanel.Height; // Match the size of stack panel
         }
 
         private void Board_ChessCreated(object? _, ChessPiece chess) => AddImageEvent(chess.Image);
@@ -130,8 +128,9 @@ namespace ChessGame
                 return;
 
             Point mousePosition = e.GetPosition(UI);
+            Coord startCoord = holdChess.Coord;
             Coord endCoord = _board.GetPosition(mousePosition);
-            var currentChess = _board.GetChessOn(endCoord); // Chess in current coordinates
+            var endChess = _board.GetChessOn(endCoord);
 
             // Judgment when putting down chess
             TextBlock goalGrid = _board.TipIcon[endCoord.Row, endCoord.Col];
@@ -143,14 +142,14 @@ namespace ChessGame
 
             // Valid move
             string name;
-            if (currentChess == null) // Non-capture move
+            if (endChess == null) // Non-capture move
             {
                 name = "E"; // Temporary. Denote the Empty chess name
             }
             else if (goalGrid.Background == Brushes.Red) // Capture move
             {
-                name = currentChess.Name; // Eaten chess name
-                _board.RemoveCapturedChessFromBoard(currentChess);
+                name = endChess.Name; // Eaten chess name
+                _board.RemoveCapturedChessFromBoard(endChess);
             }
             else
             {
@@ -163,19 +162,16 @@ namespace ChessGame
 
             // PutDown
             PutDown(holdChess, endCoord);
+
+            // Upadte status in board
             if (_board.CanPromotion(holdChess))
             {
                 _promotionUI = new PromotionUI(holdChess, mousePosition);
-                //_promotionUI.Margin = new Thickness(mousePosition.X, mousePosition.Y, 0, 0);
                 _promotionUI.ChessPieceSelected += PromotionUI_ChessPieceSelected;
                 UI.AddChild(_promotionUI, 0, 0);
-                //Popup chessPiecePopup = new Popup();
-                //chessPiecePopup.IsOpen = true;
-                //chessPiecePopup.HorizontalOffset = mousePosition.X;
-                //chessPiecePopup.VerticalOffset = mousePosition.Y;
-            }
-            
+            }       
             _board.UpdateCastlingState(holdChess); // Update castling state
+            _board.UpdateInPassingState(holdChess, startCoord);
             _board.IsWhiteTurn = !_board.IsWhiteTurn; // Switch opponent 
         }
 

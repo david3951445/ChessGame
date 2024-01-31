@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using System.Windows.Documents;
 
 namespace ChessGame.ChessPieces
@@ -14,11 +15,14 @@ namespace ChessGame.ChessPieces
         public Castling LongCastling { get; }
         public Castling ShortCastling { get; }
 
-        public King(bool isWhite) : base(isWhite, "K")
+        public King(bool isWhite) : this(isWhite, default) { }
+
+        public King(bool isWhite, Coord coord) : base(isWhite, "K")
         {
+            Coord = coord;
             Directions = Dir.King();
-            LongCastling = new Castling(isWhite, Coord.RangeByRow(Coord, 4));
-            ShortCastling = new Castling(isWhite, Coord.RangeByRow(Coord, -5));
+            LongCastling = new Castling(isWhite, Coord.RangeByCol(Coord, -4));
+            ShortCastling = new Castling(isWhite, Coord.RangeByCol(Coord, 3));
         }
 
         public override void AddTipToBoard(ChessBoard board)
@@ -88,10 +92,10 @@ namespace ChessGame.ChessPieces
         public Castling(bool isWhite, IEnumerable<Coord> coords)
         {
             _isWhite = isWhite;
+            RookStartCoord = coords.Last();
             _passingCoords = coords.Skip(1).Take(coords.Count() - 2).ToArray();
             RookEndCoord = _passingCoords.First();
             KingEndCoord = _passingCoords.ElementAt(1);
-            RookStartCoord = _passingCoords.Last();
         }
 
         public bool IsCurrentValid(ChessBoard board)

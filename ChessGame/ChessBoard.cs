@@ -25,9 +25,9 @@ namespace ChessGame
      */
     public class ChessBoard
     {
-        public event EventHandler<ChessMovedEventArgs>? ChessAdded;
-        public event EventHandler<ChessMovedEventArgs>? ChessRemoved;
-        public event EventHandler<ChessMovedEventArgs>? ChessCaptured;
+        public event EventHandler<ChessPiece>? ChessAdded;
+        public event EventHandler<ChessPiece>? ChessRemoved;
+        public event EventHandler<ChessPiece>? ChessCaptured;
         public event EventHandler<ChessPiece>? ChessCreated;
         public Action? GetPromotedChess;
 
@@ -44,7 +44,7 @@ namespace ChessGame
 
         public bool IsWhiteTurn { get; set; }
         public ChessPiece?[,] CurrentState { get; private set; } // Current game situation of the board
-        public ChessPiece PawnInPassing { get; private set; }
+        public Pawn? InPassingPawn { get; private set; } // Can use bool
 
         public ChessBoard()
         {
@@ -119,7 +119,7 @@ namespace ChessGame
                 ChessPieceType.Knight => new Knight(isWhite),
                 ChessPieceType.Bishop => new Bishop(isWhite),
                 ChessPieceType.Queen => new Queen(isWhite),
-                ChessPieceType.King => new King(isWhite),
+                ChessPieceType.King => new King(isWhite, coord),
                 ChessPieceType.Pawn => new Pawn(isWhite),
                 _ => throw new NotImplementedException()
             };
@@ -136,7 +136,7 @@ namespace ChessGame
         public void Add(ChessPiece chessToAdd, Coord coord)
         {
             chessToAdd.Coord = coord;
-            ChessAdded?.Invoke(this, new ChessMovedEventArgs(chessToAdd, coord));
+            ChessAdded?.Invoke(this, chessToAdd);
             CurrentState[coord.Row, coord.Col] = chessToAdd;
         }
 
@@ -180,7 +180,7 @@ namespace ChessGame
         public void RemoveCapturedChessFromBoard(ChessPiece capturedChess)
         {
             _history.CapturedChess.Push(capturedChess); // Store the chess
-            ChessCaptured?.Invoke(this, new ChessMovedEventArgs(capturedChess, capturedChess.Coord));
+            ChessCaptured?.Invoke(this, capturedChess);
         }
 
         /// <summary>
@@ -239,10 +239,10 @@ namespace ChessGame
             return true;
         }
 
-        public void PutDown(ChessPiece chess, Coord endCoord)
+        public void PutDown(ChessPiece holdChess, Coord endCoord)
         {
-            TryCastle(chess, endCoord);
-            Add(chess, endCoord); // Add to board
+            TryCastle(holdChess, endCoord);
+            Add(holdChess, endCoord); // Add to board
             HoldChess = null;
 
             _history.TempMiddleMove = string.Empty; // Reset temp of middle move expression
@@ -289,6 +289,15 @@ namespace ChessGame
             return true;
         }
 
+
+        public void UpdateInPassingState(ChessPiece holdChess, Coord startCoord)
+        {
+            if (holdChess is Pawn pawn && startCoord + pawn.Foward2 == pawn.Coord)
+                InPassingPawn = pawn;
+            else
+                InPassingPawn = null;
+        }
+
         public bool IsKingDepended(ChessPiece holdChess)
         {
             var king = holdChess.IsWhite ? _whiteKing : _blackKing;
@@ -308,7 +317,7 @@ namespace ChessGame
         {
             if (chess == null)
                 return;
-            ChessRemoved?.Invoke(this, new ChessMovedEventArgs(chess, coord));
+            ChessRemoved?.Invoke(this, chess);
         }
     }
 

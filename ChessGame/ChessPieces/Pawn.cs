@@ -8,9 +8,11 @@ using System.Windows.Media;
 
 namespace ChessGame.ChessPieces
 {
-    class Pawn : OneGridChessPiece
+    public class Pawn : OneGridChessPiece
     {
         private Coord _foward;
+
+        public Coord Foward2 => 2 * _foward;
 
         public Pawn(bool _isWhite) : base(_isWhite, "P")
         {
@@ -49,7 +51,7 @@ namespace ChessGame.ChessPieces
                 if (!board.IsOutOfBound(coord))
                 {
                     targetChess = board.GetChessOn(coord);
-                    if (targetChess != null && !IsSameColor(targetChess))
+                    if (targetChess != null && !IsSameColor(targetChess) || board.InPassingPawn != null)
                     { // Is Chess there && Different color chess there
                         board.TipIcon[coord.Row, coord.Col].Visibility = Visibility.Visible;
                         board.TipIcon[coord.Row, coord.Col].Background = Brushes.Red;

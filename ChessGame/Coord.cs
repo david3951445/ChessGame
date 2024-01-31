@@ -46,14 +46,17 @@ namespace ChessGame
         /// </summary>
         private static IEnumerable<int> MyRange(int start, int offset)
         {
+            var count = Math.Abs(offset) + 1;
             if (offset >= 0)
-                return Enumerable.Range(start, offset);
-            return Enumerable.Range(start + offset, Math.Abs(offset)).Reverse();
+                return Enumerable.Range(start, count);
+            return Enumerable.Range(start + offset, count).Reverse();
         }
 
         public override string ToString() => $"({Row}, {Col})";
 
         public static Coord operator +(Coord a, Coord b) => new Coord(a.Row + b.Row, a.Col + b.Col);
+
+        public static Coord operator *(int scale, Coord a) => new Coord(a.Row * scale, a.Col * scale);
 
         public static bool operator ==(Coord a, Coord b) => a.Row == b.Row && a.Col == b.Col;
 
