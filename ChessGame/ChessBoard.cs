@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 using ChessGame.ChessPieces;
+using Point = System.Windows.Point;
 
 namespace ChessGame
 {
@@ -281,7 +282,6 @@ namespace ChessGame
             return true;
         }
 
-
         public void UpdateInPassingState(ChessPiece holdChess, Coord startCoord)
         {
             if (holdChess is Pawn pawn && startCoord + pawn.Foward2 == pawn.Coord)
@@ -290,10 +290,16 @@ namespace ChessGame
                 InPassingPawn = null;
         }
 
-        public bool IsKingDepended(ChessPiece holdChess)
+        public bool IsKingAttacked(ChessPiece holdChess, Coord endCoord)
         {
             var king = holdChess.IsWhite ? _whiteKing : _blackKing;
-            return king.IsUnderAttacked(this);
+
+            // Put holdChess on board for judgement
+            CurrentState[endCoord.Row, endCoord.Col] = holdChess;
+            var isAttacked = king.IsUnderAttacked(this);
+            CurrentState[endCoord.Row, endCoord.Col] = null;
+
+            return isAttacked;
         }
 
         //public ChessPiece TryPromote(ChessPiece chessToPromote)

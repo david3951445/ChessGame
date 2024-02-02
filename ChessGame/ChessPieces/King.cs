@@ -83,8 +83,9 @@ namespace ChessGame.ChessPieces
     {
         public bool IsKingOrRookMoved; // Permanent
         private bool _isWhite;
-        private Coord[] _passingCoords;
+        private IEnumerable<Coord> _kingPassingCoords;
 
+        public Coord KingStartCoord { get; }
         public Coord KingEndCoord { get; }        
         public Coord RookStartCoord { get; }
         public Coord RookEndCoord { get; }
@@ -92,19 +93,20 @@ namespace ChessGame.ChessPieces
         public Castling(bool isWhite, IEnumerable<Coord> coords)
         {
             _isWhite = isWhite;
+            KingStartCoord = coords.First();
+            RookEndCoord = coords.ElementAt(1);
+            KingEndCoord = coords.ElementAt(2);
             RookStartCoord = coords.Last();
-            _passingCoords = coords.Skip(1).Take(coords.Count() - 2).ToArray();
-            RookEndCoord = _passingCoords.First();
-            KingEndCoord = _passingCoords.ElementAt(1);
+            _kingPassingCoords = coords.Take(coords.Count() - 2);
         }
 
         public bool IsCurrentValid(ChessBoard board)
         {
             if (IsKingOrRookMoved)
                 return false;
-            if (_passingCoords.Any(coord => board.GetChessOn(coord) != null))
+            if (_kingPassingCoords.Skip(1).Any(coord => board.GetChessOn(coord) != null))
                 return false;
-            return _passingCoords.All(passingCoord => !King.IsUnderAttacked(board, _isWhite, passingCoord));
+            return _kingPassingCoords.All(passingCoord => !King.IsUnderAttacked(board, _isWhite, passingCoord));
         }
 
         private bool HasAttacker(ChessBoard board, Coord coord)

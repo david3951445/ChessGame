@@ -79,28 +79,27 @@ namespace ChessGame
             Coord currendCoord = _board.GetPosition(mousePosition); // Current coordinates
             ChessPiece? pickUpChess = _board.GetChessOn(currendCoord); // Chess in current coordinates
 
-            if (pickUpChess != null) // Mouse hit the chess
-            {
-                // Find and show the valid move on board
-                pickUpChess.AddTipToBoard(_board);
-
-                // Remove chess from board
-                _board.Remove(pickUpChess);
-
-                // Add chess image to "air"
-                var image = pickUpChess.Image;
-                UI.AddChild(image, 0, 0);
-                pickUpChess.FollowMousePosition(mousePosition);
-                _board.HoldChess = pickUpChess;
-
-                // Record the chess
-                _board._history.TempMiddleMove += $"{pickUpChess.Name}{(char)('a' + currendCoord.Col)}{(char)('0' + 8 - currendCoord.Row)}";
-            }
-            else
+            if (pickUpChess == null) // Mouse hit the chess
             {
                 // Cancel some effect
                 // ...
+                return;
             }
+
+            // Find and show the valid move on board
+            pickUpChess.AddTipToBoard(_board);
+
+            // Remove chess from board
+            _board.Remove(pickUpChess);
+
+            // Add chess image to "air"
+            var image = pickUpChess.Image;
+            UI.AddChild(image, 0, 0);
+            pickUpChess.FollowMousePosition(mousePosition);
+            _board.HoldChess = pickUpChess;
+
+            // Record the chess
+            _board._history.TempMiddleMove += $"{pickUpChess.Name}{(char)('a' + currendCoord.Col)}{(char)('0' + 8 - currendCoord.Row)}";
         }
 
         private void Image_MouseMove(object sender, MouseEventArgs e)
@@ -133,7 +132,7 @@ namespace ChessGame
 
             // Judgment when putting down chess
             TextBlock goalGrid = _board.TipIcon[endCoord.Row, endCoord.Col];
-            if (goalGrid.Visibility != Visibility.Visible || holdChess.IsWhite != _board.IsWhiteTurn || _board.IsKingDepended(holdChess))
+            if (goalGrid.Visibility != Visibility.Visible || holdChess.IsWhite != _board.IsWhiteTurn || _board.IsKingAttacked(holdChess, endCoord))
             {
                 PutDown(holdChess, holdChess.Coord); // Put back to the previous position
                 return;
@@ -168,7 +167,7 @@ namespace ChessGame
                 _promotionUI = new PromotionUI(holdChess, mousePosition);
                 _promotionUI.ChessPieceSelected += PromotionUI_ChessPieceSelected;
                 UI.AddChild(_promotionUI, 0, 0);
-            }       
+            }
             _board.UpdateCastlingState(holdChess); // Update castling state
             _board.UpdateInPassingState(holdChess, startCoord);
             _board.IsWhiteTurn = !_board.IsWhiteTurn; // Switch opponent 
