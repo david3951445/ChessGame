@@ -73,7 +73,31 @@
         <Button x:Name="nextButton" Grid.Column="1" Content="&gt;" HorizontalAlignment="Left" Margin="100,433,0,0" VerticalAlignment="Top" FontSize="20" Width="32" Height="32" FontWeight="Bold" Click="NextButton_Click"/>
         <Button x:Name="lastButton" Grid.Column="1" Content="&gt;&gt;" HorizontalAlignment="Left" Margin="137,433,0,0" VerticalAlignment="Top" FontSize="20" Width="32" Height="32" FontWeight="Bold" Click="LastButton_Click"/>
         <Button x:Name="startButton" Grid.Column="1" Content="Start" HorizontalAlignment="Left" Margin="10,470,0,0" VerticalAlignment="Top" Click="startButton_Click"/>
-
+        <StackPanel Grid.Column="1" Margin="0,555,0,0">
+            <Grid x:Name="gameOptionGrid" Height="20" Width="200">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <RadioButton x:Name="playerRadioButton" Content="Player" Checked="playerRadioButton_Checked"/>
+                <RadioButton x:Name="computerRadioButton" Grid.Column="1" Content="Computer" Checked="playerRadioButton_Checked"/>
+            </Grid>
+            <Grid x:Name="gameOptionGrid複製__C_" Height="20" Width="200">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="4*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <RadioButton x:Name="whiteRadioButton" Content="White" Grid.ColumnSpan="2"/>
+                <RadioButton x:Name="blackRadioButton" Grid.Column="2" Content="Black"/>
+            </Grid>
+        </StackPanel>
     </Grid>
 
 </Window>

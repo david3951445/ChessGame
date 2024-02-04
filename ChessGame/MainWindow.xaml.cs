@@ -14,6 +14,7 @@ namespace ChessGame
     {
         private readonly ChessBoard _board;
         private PromotionUI? _promotionUI;
+        private bool isPlayer; // player or computer
 
         public MainWindow()
         {
@@ -236,6 +237,14 @@ namespace ChessGame
             historyTextBox.Text = string.Empty;
 
             _board.StartNewGame();
+        }
+
+        private void playerRadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            if (sender == playerRadioButton)
+                isPlayer = true;
+            else if (sender == computerRadioButton)
+                isPlayer = false;
         }
     }
 }
