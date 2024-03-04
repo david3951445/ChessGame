@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 using ChessGame.ChessPieces;
+using ChessGame.Record;
 using Point = System.Windows.Point;
 
 namespace ChessGame
