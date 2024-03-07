@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Enumeration;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -36,10 +37,10 @@ namespace ChessGame
         public string White { get; private set; } = ""; // Player of the white pieces, in Lastname, Firstname format.
         public string Black { get; private set; } = ""; // Player of the black pieces, same format as White.
         public string Result { get; private set; } = ""; // Result of the game. It is recorded as White score, dash, then Black score, or * (other, e.g., the game is ongoing).
+        public string Movetext { get; private set; } = "";
         // Optional
         public int PlyCount { get; private set; } // String value denoting the total number of half-moves played.
-        // ...
-        public string Movetext = "";
+        public FEN Fen { get; private set; } = FEN.Default; // The initial position of the chessboard
 
         public PGN() { }
 
@@ -160,7 +161,7 @@ namespace ChessGame
             static MoveInfo ParsePGNMove(string move)
             {
                 // 定義正則表達式模式，用於捕獲 PGN 中的移動信息
-                string pattern = @"(?<piece>[PNBRQK]?)(?<startFile>[a-h]?)(?<startRank>[1-8]?)(?<capture>x?)(?<endFile>[a-h])(?<endRank>[1-8])(?<promotion>[+#]?)";
+                string pattern = @"(?<piece>[NBRQK]?)(?<startFile>[a-h]?)(?<startRank>[1-8]?)(?<capture>x?)(?<endFile>[a-h])(?<endRank>[1-8])(?<promotion>(=[NBRQ])?)(?<check>[+#]?)";
 
                 // 使用 Regex.Match 方法進行匹配
                 Match match = Regex.Match(move, pattern);
