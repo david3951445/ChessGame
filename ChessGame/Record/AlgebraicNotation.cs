@@ -38,6 +38,7 @@ namespace ChessGame
         public string Black { get; private set; } = ""; // Player of the black pieces, same format as White.
         public string Result { get; private set; } = ""; // Result of the game. It is recorded as White score, dash, then Black score, or * (other, e.g., the game is ongoing).
         public string Movetext { get; private set; } = "";
+        public List<MoveInfo> Moveinfos = new();
         // Optional
         public int PlyCount { get; private set; } // String value denoting the total number of half-moves played.
         public FEN Fen { get; private set; } = FEN.Default; // The initial position of the chessboard
@@ -129,6 +130,7 @@ namespace ChessGame
                         break;
                     case MovetextState.WhiteMove:
                         var info = ParsePGNMove(word);
+                        Moveinfos.Add(info);
                         if (info != null)
                             state = MovetextState.BlackNumberMove;
                         else
@@ -173,10 +175,9 @@ namespace ChessGame
                 if (match.Success)
                 {
                     moveInfo.Piece = match.Groups["piece"].Value;
-                    moveInfo.StartFile = match.Groups["startFile"].Value;
-                    moveInfo.StartRank = match.Groups["startRank"].Value;
-                    moveInfo.EndFile = match.Groups["endFile"].Value;
-                    moveInfo.EndRank = match.Groups["endRank"].Value;
+                    moveInfo.StartCoord = MoveInfo.ConvertToCoord(match.Groups["startFile"].Value + match.Groups["startRank"].Value);
+                    moveInfo.EndCoord = MoveInfo.ConvertToCoord(match.Groups["endFile"].Value + match.Groups["endRank"].Value);
+                    moveInfo.PromotedPiece = match.Groups["promotion"].Value;
                     // 這裡省略了捕獲和晉升的部分，可以根據需要添加相應的邏輯
                 }
 
@@ -186,6 +187,7 @@ namespace ChessGame
             {
                 MovetextState state;
                 var info = ParsePGNMove(move);
+                Moveinfos.Add(info);
                 if (info != null)
                 {
                     // ...
@@ -225,13 +227,29 @@ namespace ChessGame
             End
         }
 
-        class MoveInfo
+        public class MoveInfo
         {
             public string Piece { get; set; }
-            public string StartFile { get; set; }
-            public string StartRank { get; set; }
-            public string EndFile { get; set; }
-            public string EndRank { get; set; }
+            public Coord StartCoord { get; set; }
+            public Coord EndCoord { get; set; }
+            public string PromotedPiece { get; set; }
+
+            public static Coord ConvertToCoord(string fileAndRank)
+            {
+                if (fileAndRank.Length != 2)
+                    throw new ArgumentException("Invalid input. The string length must be 2.");
+
+                char fileChar = fileAndRank[0];
+                char rankChar = fileAndRank[1];
+
+                if (fileChar < 'a' || fileChar > 'h' || rankChar < '1' || rankChar > '8')
+                    throw new ArgumentException("Invalid input. The input must be in the format 'file and rank' within the range of 'a' to 'h' for file and '1' to '8' for rank, e.g., 'f4', 'a1', etc.");
+
+                int file = fileChar - 'a'; // 將字母表示的列轉換為整數
+                int rank = 7 - (rankChar - '1'); // 將數字表示的行轉換為整數
+
+                return new Coord(rank, file);
+            }
         }
     }
 }
